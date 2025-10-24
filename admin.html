@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Online Academy Guru</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f8fafc;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #2a3d66;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logout-btn {
+      float: right;
+      background: #c53030;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #9b2c2c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #2a3d66;
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    select.status {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      tr {
+        margin-bottom: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 8px;
+      }
+      th {
+        display: none;
+      }
+      td {
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+      }
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #2a3d66;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📋 Admin Dashboard — Online Academy Guru</h2>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+
+  <table id="requestsTable">
+    <thead>
+      <tr>
+        <th>Request ID</th>
+        <th>Role</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>City & State</th>
+        <th>Message</th>
+        <th>Status</th>
+        <th>Submitted</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <p class="footer">© 2025 Online Academy Guru | Admin Panel</p>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHZ1p3bvNMb9Tb8aK1pyEaGzdmyZi4tjc9OL-0gRloPafK6h_1Elk_tC7QXWiJzv0q/exec'; // 👈 same as in contact.html
+const ADMIN_PASSWORD = 'Admin@123'; // 👈 change this password
+
+// 🔐 Simple Password Login
+(function authenticate() {
+  const pass = sessionStorage.getItem("adminAuth") || prompt("Enter admin password:");
+  if (pass !== ADMIN_PASSWORD) {
+    alert("Access Denied ❌");
+    window.location.href = "index.html";
+  } else {
+    sessionStorage.setItem("adminAuth", ADMIN_PASSWORD);
+    loadData();
+  }
+})();
+
+// 🚪 Logout
+function logout() {
+  sessionStorage.removeItem("adminAuth");
+  window.location.href = "index.html";
+}
+
+// 📦 Load Data from Google Sheets
+async function loadData() {
+  try {
+    const res = await fetch(SCRIPT_URL);
+    const data = await res.json();
+
+    const tbody = document.querySelector("#requestsTable tbody");
+    tbody.innerHTML = ""; // clear previous data
+
+    data.reverse().forEach(row => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td data-label="Request ID">${row["Request ID"] || "-"}</td>
+        <td data-label="Role">${row["Role"] || "-"}</td>
+        <td data-label="Name">${row["Name"] || "-"}</td>
+        <td data-label="Email">${row["Email"] || "-"}</td>
+        <td data-label="Mobile">${row["Mobile"] || "-"}</td>
+        <td data-label="City & State">${row["City & State"] || "-"}</td>
+        <td data-label="Message">${row["Message"] || "-"}</td>
+        <td data-label="Status">
+          <select class="status" onchange="updateStatus('${row["Request ID"]}', this.value)">
+            <option ${row["Status"] === "Pending" ? "selected" : ""}>Pending</option>
+            <option ${row["Status"] === "In Progress" ? "selected" : ""}>In Progress</option>
+            <option ${row["Status"] === "Completed" ? "selected" : ""}>Completed</option>
+            <option ${row["Status"] === "Replied" ? "selected" : ""}>Replied</option>
+          </select>
+        </td>
+        <td data-label="Timestamp">${row["Timestamp"] || "-"}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load data from Google Sheet.");
+  }
+}
+
+// ✏️ Update Status in Google Sheet (via Apps Script)
+async function updateStatus(requestId, newStatus) {
+  try {
+    await fetch(`${SCRIPT_URL}?update=${encodeURIComponent(requestId)}&status=${encodeURIComponent(newStatus)}`);
+    alert(`✅ Status updated to "${newStatus}"`);
+  } catch (err) {
+    alert("Error updating status. Try again.");
+  }
+}
+</script>
+
+</body>
+</html>
+
