@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -123,7 +123,6 @@
     <p>If you have questions or want to enroll, please reach out to us.</p>
   </div>
 
-  <!-- ✅ Contact Form linked to Google Sheet -->
   <div class="form-container">
     <form id="contactForm">
       <label for="Role">I am a:</label>
@@ -132,6 +131,36 @@
         <option value="Educator">Educator</option>
         <option value="Student">Student</option>
         <option value="Parent/Guardian">Parent/Guardian</option>
+      </select>
+
+      <!-- Educator: Class Range & Subject -->
+      <select name="classRangeEducator" id="classRangeEducator" style="display:none;" required>
+        <option value="" disabled selected>Select Class Range</option>
+        <option value="1-5">1-5</option>
+        <option value="6-8">6-8</option>
+        <option value="9-10">9-10</option>
+        <option value="11-12">11-12</option>
+      </select>
+
+      <select name="subjectEducator" id="subjectEducator" style="display:none;" required>
+        <option value="" disabled selected>Select Subject</option>
+      </select>
+
+      <!-- Student / Parent: Class Range, Class List & Subject -->
+      <select name="classRangeSP" id="classRangeSP" style="display:none;" required>
+        <option value="" disabled selected>Select Class Range</option>
+        <option value="1-5">1-5</option>
+        <option value="6-8">6-8</option>
+        <option value="9-10">9-10</option>
+        <option value="11-12">11-12</option>
+      </select>
+
+      <select name="classListSP" id="classListSP" style="display:none;" required>
+        <option value="" disabled selected>Select Your Class</option>
+      </select>
+
+      <select name="subjectSP" id="subjectSP" style="display:none;" required>
+        <option value="" disabled selected>Select Subject</option>
       </select>
 
       <label>Your Name</label>
@@ -152,7 +181,6 @@
       <button type="submit">Send Message</button>
     </form>
 
-    <!-- Inline thank you message -->
     <div class="thankyou-message" id="thankYouMessage">
       <h3>🎉 Thank You!</h3>
       <p>Your message has been sent successfully.<br>
@@ -166,42 +194,165 @@
 </footer>
 
 <script>
-  const form = document.getElementById('contactForm');
-  const thankYou = document.getElementById('thankYouMessage');
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHZ1p3bvNMb9Tb8aK1pyEaGzdmyZi4tjc9OL-0gRloPafK6h_1Elk_tC7QXWiJzv0q/exec'; // 👈 Replace with your Apps Script deployment link
+const roleSelect = document.getElementById('Role');
 
-  form.addEventListener('submit', async function (event) {
-    event.preventDefault();
+// Educator elements
+const classRangeEducator = document.getElementById('classRangeEducator');
+const subjectEducator = document.getElementById('subjectEducator');
 
-    const formData = {
-      role: form.role.value,
-      name: form.name.value,
-      email: form.email.value,
-      mobile: form.mobile.value,
-      citystate: form.citystate.value,
-      message: form.message.value
-    };
+// Student / Parent elements
+const classRangeSP = document.getElementById('classRangeSP');
+const classListSP = document.getElementById('classListSP');
+const subjectSP = document.getElementById('subjectSP');
 
-    try {
-      const response = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(formData)
-      });
+// Subjects for Educator
+const subjectsByClassEducator = {
+  '1-5':['Math','English','EVS','Social Studies', 'All Subjects'],
+  '6-8':['Math','English','Science','Hindi','Social Studies','All Subjects'],
+  '9-10':['Math','Social Studies','Science','Hindi','English'],
+  '11-12':['Physics','Chemistry','Biology','Math','English','Economics','Accountancy']
+};
 
-      const result = await response.json();
+// Classes and subjects for Student/Parent
+const classByRangeSP = {
+  '1-5':['Class 1','Class 2','Class 3','Class 4','Class 5'],
+  '6-8':['Class 6','Class 7','Class 8'],
+  '9-10':['Class 9','Class 10'],
+  '11-12':['Class 11','Class 12']
+};
 
-      if (result.success) {
-        form.reset();
-        form.style.display = 'none';
-        thankYou.style.display = 'block';
-      } else {
-        alert('Error: ' + result.error);
-      }
-    } catch (error) {
-      alert('Form submission failed. Please check your connection or try again later.');
-      console.error(error);
-    }
+const subjectsByRangeSP = {
+  '1-5':['Math','English','Science','Social Studies', 'All Subjects'],
+  '6-8':['Math','English','Science','Hindi','Social Studies','All Subjects'],
+  '9-10':['Math','Social Studies','Science','Hindi','English'],
+  '11-12':['Physics','Chemistry','Biology','Math','English','Economics','Accountancy']
+};
+
+// Show/hide fields based on role
+roleSelect.addEventListener('change', function() {
+  if(this.value==='Educator'){
+    classRangeEducator.style.display='block';
+    classRangeEducator.required = true;
+    subjectEducator.style.display='block';
+    subjectEducator.required = true;
+
+    classRangeSP.style.display='none';
+    classListSP.style.display='none';
+    subjectSP.style.display='none';
+    classRangeSP.required = false;
+    classListSP.required = false;
+    subjectSP.required = false;
+  } else if(this.value==='Student' || this.value==='Parent/Guardian'){
+    classRangeSP.style.display='block';
+    classRangeSP.required = true;
+    classListSP.style.display='none';
+    classListSP.required = false;
+    subjectSP.style.display='none';
+    subjectSP.required = false;
+
+    classRangeEducator.style.display='none';
+    subjectEducator.style.display='none';
+    classRangeEducator.required = false;
+    subjectEducator.required = false;
+  } else{
+    // hide all
+    classRangeEducator.style.display='none';
+    subjectEducator.style.display='none';
+    classRangeSP.style.display='none';
+    classListSP.style.display='none';
+    subjectSP.style.display='none';
+    classRangeEducator.required = false;
+    subjectEducator.required = false;
+    classRangeSP.required = false;
+    classListSP.required = false;
+    subjectSP.required = false;
+  }
+});
+
+// Educator subject update
+classRangeEducator.addEventListener('change', function(){
+  const subs = subjectsByClassEducator[this.value] || [];
+  subjectEducator.innerHTML='<option value="" disabled selected>Select Subject</option>';
+  subs.forEach(s=>{
+    let opt=document.createElement('option');
+    opt.value=s.toLowerCase().replace(/\s+/g,'_');
+    opt.textContent=s;
+    subjectEducator.appendChild(opt);
   });
+});
+
+// Student / Parent class and subject update
+classRangeSP.addEventListener('change', function(){
+  const classes = classByRangeSP[this.value] || [];
+  classListSP.innerHTML='<option value="" disabled selected>Select Your Class</option>';
+  classes.forEach(c=>{
+    let opt=document.createElement('option');
+    opt.value=c.toLowerCase().replace(/\s+/g,'_');
+    opt.textContent=c;
+    classListSP.appendChild(opt);
+  });
+  classListSP.style.display='block';
+  classListSP.required = true;
+
+  const subs = subjectsByRangeSP[this.value] || [];
+  subjectSP.innerHTML='<option value="" disabled selected>Select Subject</option>';
+  subs.forEach(s=>{
+    let opt=document.createElement('option');
+    opt.value=s.toLowerCase().replace(/\s+/g,'_');
+    opt.textContent=s;
+    subjectSP.appendChild(opt);
+  });
+  subjectSP.style.display='block';
+  subjectSP.required = true;
+});
+
+// Form submission to Google Sheets
+const form = document.getElementById('contactForm');
+const thankYou = document.getElementById('thankYouMessage');
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx38g7GpXiVyby5LyK8F_xIP3V9aaB8jqV3lI8F9QACIVSWd2RIuaiqvMix5_Egbiue/exec';
+
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+
+  const formData = {
+    role: form.role.value,
+    classRangeEducator: form.classRangeEducator ? form.classRangeEducator.value : '',
+    subjectEducator: form.subjectEducator ? form.subjectEducator.value : '',
+    classRangeSP: form.classRangeSP ? form.classRangeSP.value : '',
+    classListSP: form.classListSP ? form.classListSP.value : '',
+    subjectSP: form.subjectSP ? form.subjectSP.value : '',
+    name: form.name.value,
+    email: form.email.value,
+    mobile: form.mobile.value,
+    citystate: form.citystate.value,
+    message: form.message.value
+  };
+
+  try{
+    const res = await fetch(SCRIPT_URL,{
+      method:'POST',
+      body: JSON.stringify(formData)
+    });
+    const result = await res.json();
+    if(result.success){
+      form.reset();
+      form.style.display='none';
+      thankYou.style.display='block';
+
+      // hide all dynamic fields
+      classRangeEducator.style.display='none';
+      subjectEducator.style.display='none';
+      classRangeSP.style.display='none';
+      classListSP.style.display='none';
+      subjectSP.style.display='none';
+    }else{
+      alert('Error: '+result.error);
+    }
+  }catch(err){
+    alert('Form submission failed. Check connection.');
+    console.error(err);
+  }
+});
 </script>
 
 </body>
