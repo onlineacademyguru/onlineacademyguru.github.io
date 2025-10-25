@@ -1,135 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard | Online Academy Guru</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #f8fafc;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | Online Academy Guru</title>
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f8fafc;
+    margin: 0;
+    display: flex;
+    min-height: 100vh;
+  }
 
-    h2 {
-      color: #2a3d66;
-      text-align: center;
-      margin-bottom: 20px;
-    }
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background: #2a3d66;
+    color: white;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .logout-btn {
-      float: right;
-      background: #c53030;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+  .sidebar h2 {
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 
-    .logout-btn:hover {
-      background: #9b2c2c;
-    }
+  .tab {
+    width: 80%;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    transition: background 0.2s;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 30px;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+  .tab:hover, .tab.active {
+    background: white;
+    color: #2a3d66;
+    font-weight: bold;
+  }
 
-    th, td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-    }
+  /* Main content */
+  .main-content {
+    flex: 1;
+    padding: 20px;
+  }
 
-    th {
-      background: #2a3d66;
-      color: white;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 0.5px;
-    }
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
 
-    tr:hover {
-      background: #f1f5f9;
-    }
+  .search-box input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 260px;
+    font-size: 0.8rem;
+  }
 
-    select.status {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background: #fff;
-    }
+  .logout-btn {
+    background: #c53030;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
 
-    .footer {
-      text-align: center;
-      margin-top: 40px;
-      color: #777;
-      font-size: 0.9rem;
-    }
+  .logout-btn:hover {
+    background: #9b2c2c;
+  }
 
-    @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      tr {
-        margin-bottom: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 8px;
-      }
-      th {
-        display: none;
-      }
-      td {
-        border: none;
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9rem;
-      }
-      td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        color: #2a3d66;
-      }
-    }
-  </style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  th, td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    font-size: 0.8rem;
+  }
+
+  th {
+    background: #2a3d66;
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+  }
+
+  select.status {
+    padding: 6px 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-weight: 200;
+    text-align: center;
+  }
+
+  /* Status Colors */
+  .status-pending { color: #d97706; font-weight: 500; }
+  .status-inprogress { color: #2563eb; font-weight: 500; }
+  .status-completed { color: #16a34a; font-weight: 500; }
+  .status-replied { color: #7c3aed; font-weight: 500; }
+
+  /* View button */
+  .view-btn {
+    background: #2a3d66;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  /* Toast */
+  .toast {
+    visibility: hidden;
+    min-width: 220px;
+    background-color: #16a34a;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 0.5s, bottom 0.5s;
+  }
+
+  .toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+  }
+
+  /* Popup Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+
+  .modal-content h3 {
+    color: #2a3d66;
+    margin-top: 0;
+  }
+
+  .close-btn {
+    background: #c53030;
+    color: white;
+    border: none;
+    float: right;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
 
-  <h2>📋 Admin Dashboard — Online Academy Guru</h2>
-  <button class="logout-btn" onclick="logout()">Logout</button>
+  <!-- Sidebar Tabs -->
+  <div class="sidebar">
+    <h2>   Online Academy Guru</h2>
+    <div class="tab active" data-status="All">📋 All</div>
+    <div class="tab" data-status="Pending">🟠 Pending</div>
+    <div class="tab" data-status="In Progress">🔵 In Progress</div>
+    <div class="tab" data-status="Replied">🟣 Replied</div>
+    <div class="tab" data-status="Completed">🟢 Completed</div>
+  </div>
 
-  <table id="requestsTable">
-    <thead>
-      <tr>
-        <th>Request ID</th>
-        <th>Role</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Mobile</th>
-        <th>City & State</th>
-        <th>Message</th>
-        <th>Status</th>
-        <th>Submitted</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search by Name, Email, Mobile, or ID...">
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
 
-  <p class="footer">© 2025 Online Academy Guru | Admin Panel</p>
+    <table id="requestsTable">
+      <thead>
+        <tr>
+          <th>Request ID</th>
+          <th>Role</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>City & State</th>
+          <th>Message</th>
+          <th>Status</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="toast" class="toast">✅ Status updated!</div>
+  </div>
+
+  <!-- Popup Modal -->
+  <div id="messageModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">Close</button>
+      <h3>Message Details</h3>
+      <p id="modalMessage"></p>
+    </div>
+  </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHZ1p3bvNMb9Tb8aK1pyEaGzdmyZi4tjc9OL-0gRloPafK6h_1Elk_tC7QXWiJzv0q/exec'; // 👈 same as in contact.html
-const ADMIN_PASSWORD = 'Admin@123'; // 👈 change this password
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHZ1p3bvNMb9Tb8aK1pyEaGzdmyZi4tjc9OL-0gRloPafK6h_1Elk_tC7QXWiJzv0q/exec'; // replace with Apps Script URL
+const ADMIN_PASSWORD = 'Admin@123'; // change password
+let allData = [];
+let filteredData = [];
 
-// 🔐 Simple Password Login
+// Auth check
 (function authenticate() {
   const pass = sessionStorage.getItem("adminAuth") || prompt("Enter admin password:");
   if (pass !== ADMIN_PASSWORD) {
@@ -141,61 +263,130 @@ const ADMIN_PASSWORD = 'Admin@123'; // 👈 change this password
   }
 })();
 
-// 🚪 Logout
 function logout() {
   sessionStorage.removeItem("adminAuth");
   window.location.href = "index.html";
 }
 
-// 📦 Load Data from Google Sheets
 async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL);
-    const data = await res.json();
-
-    const tbody = document.querySelector("#requestsTable tbody");
-    tbody.innerHTML = ""; // clear previous data
-
-    data.reverse().forEach(row => {
-      const tr = document.createElement("tr");
-
-      tr.innerHTML = `
-        <td data-label="Request ID">${row["Request ID"] || "-"}</td>
-        <td data-label="Role">${row["Role"] || "-"}</td>
-        <td data-label="Name">${row["Name"] || "-"}</td>
-        <td data-label="Email">${row["Email"] || "-"}</td>
-        <td data-label="Mobile">${row["Mobile"] || "-"}</td>
-        <td data-label="City & State">${row["City & State"] || "-"}</td>
-        <td data-label="Message">${row["Message"] || "-"}</td>
-        <td data-label="Status">
-          <select class="status" onchange="updateStatus('${row["Request ID"]}', this.value)">
-            <option ${row["Status"] === "Pending" ? "selected" : ""}>Pending</option>
-            <option ${row["Status"] === "In Progress" ? "selected" : ""}>In Progress</option>
-            <option ${row["Status"] === "Completed" ? "selected" : ""}>Completed</option>
-            <option ${row["Status"] === "Replied" ? "selected" : ""}>Replied</option>
-          </select>
-        </td>
-        <td data-label="Timestamp">${row["Timestamp"] || "-"}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    allData = await res.json();
+    filteredData = allData;
+    displayData(allData);
   } catch (err) {
+    alert("Failed to load data.");
     console.error(err);
-    alert("Failed to load data from Google Sheet.");
   }
 }
 
-// ✏️ Update Status in Google Sheet (via Apps Script)
-async function updateStatus(requestId, newStatus) {
+function displayData(data) {
+  const tbody = document.querySelector("#requestsTable tbody");
+  tbody.innerHTML = "";
+  data.slice().reverse().forEach(row => {
+    const status = row["Status"] || "Pending";
+    const cssClass = getStatusClass(status);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row["Request ID"] || "-"}</td>
+      <td>${row["Role"] || "-"}</td>
+      <td>${row["Name"] || "-"}</td>
+      <td>${row["Email"] || "-"}</td>
+      <td>${row["Mobile"] || "-"}</td>
+      <td>${row["City & State"] || "-"}</td>
+      <td><button class="view-btn" onclick="viewMessage('${escapeHtml(row["Message"] || "No message")}')">👁️ View</button></td>
+      <td>
+        <select class="status ${cssClass}" onchange="updateStatus('${row["Request ID"]}', this.value, this)">
+          <option ${status==="Pending"?"selected":""}>Pending</option>
+          <option ${status==="In Progress"?"selected":""}>In Progress</option>
+          <option ${status==="Replied"?"selected":""}>Replied</option>
+          <option ${status==="Completed"?"selected":""}>Completed</option>
+        </select>
+      </td>
+      <td>${row["Timestamp"] || "-"}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function getStatusClass(status) {
+  switch(status) {
+    case "Pending": return "status-pending";
+    case "In Progress": return "status-inprogress";
+    case "Completed": return "status-completed";
+    case "Replied": return "status-replied";
+    default: return "";
+  }
+}
+
+// Update status
+async function updateStatus(requestId, newStatus, selectElement) {
+  selectElement.className = "status " + getStatusClass(newStatus);
   try {
     await fetch(`${SCRIPT_URL}?update=${encodeURIComponent(requestId)}&status=${encodeURIComponent(newStatus)}`);
-    alert(`✅ Status updated to "${newStatus}"`);
-  } catch (err) {
-    alert("Error updating status. Try again.");
+    showToast("✅ Status updated to " + newStatus);
+  } catch {
+    showToast("❌ Error updating status");
   }
 }
-</script>
 
+// Toast
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+// Modal message
+function viewMessage(msg) {
+  const modal = document.getElementById("messageModal");
+  document.getElementById("modalMessage").innerText = msg;
+  modal.style.display = "flex";
+}
+function closeModal() {
+  document.getElementById("messageModal").style.display = "none";
+}
+function escapeHtml(text) {
+  return text.replace(/"/g, '&quot;').replace(/'/g, "&#39;");
+}
+
+// Sidebar filter
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", function() {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    this.classList.add("active");
+    const status = this.dataset.status;
+    if (status === "All") filteredData = allData;
+    else filteredData = allData.filter(r => (r["Status"] || "Pending") === status);
+    displayData(filteredData);
+  });
+});
+
+// Fuzzy Search
+function fuzzyMatch(query, text) {
+  query = query.toLowerCase().split("").filter(ch => ch.trim() !== "");
+  text = text.toLowerCase();
+  let ti = 0;
+  for (let qi = 0; qi < query.length; qi++) {
+    ti = text.indexOf(query[qi], ti);
+    if (ti === -1) return false;
+    ti++;
+  }
+  return true;
+}
+document.getElementById("searchInput").addEventListener("keyup", function() {
+  const query = this.value.toLowerCase().trim();
+  if (!query) return displayData(filteredData);
+  const result = filteredData.filter(row =>
+    fuzzyMatch(query, row["Name"] || "") ||
+    fuzzyMatch(query, row["Email"] || "") ||
+    fuzzyMatch(query, row["Mobile"] || "") ||
+    fuzzyMatch(query, row["Request ID"] || "")
+  );
+  displayData(result);
+});
+</script>
 </body>
 </html>
 
