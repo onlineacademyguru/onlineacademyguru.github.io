@@ -193,13 +193,18 @@
     border-radius: 6px;
     cursor: pointer;
   }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
 </style>
 </head>
 <body>
 
   <!-- Sidebar Tabs -->
   <div class="sidebar">
-    <h2>   Online Academy Guru</h2>
+    <h2>Online Academy Guru</h2>
     <div class="tab active" data-status="All">📋 All</div>
     <div class="tab" data-status="Pending">🟠 Pending</div>
     <div class="tab" data-status="In Progress">🔵 In Progress</div>
@@ -225,7 +230,7 @@
           <th>Email</th>
           <th>Mobile</th>
           <th>City & State</th>
-          <th>Message</th>
+          <th>View</th>
           <th>Status</th>
           <th>Submitted</th>
         </tr>
@@ -241,13 +246,13 @@
     <div class="modal-content">
       <button class="close-btn" onclick="closeModal()">Close</button>
       <h3>Message Details</h3>
-      <p id="modalMessage"></p>
+      <pre id="modalMessage"></pre>
     </div>
   </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx38g7GpXiVyby5LyK8F_xIP3V9aaB8jqV3lI8F9QACIVSWd2RIuaiqvMix5_Egbiue/exec'; // replace with Apps Script URL
-const ADMIN_PASSWORD = 'Admin@123'; // change password
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx38g7GpXiVyby5LyK8F_xIP3V9aaB8jqV3lI8F9QACIVSWd2RIuaiqvMix5_Egbiue/exec';
+const ADMIN_PASSWORD = 'Admin@123';
 let allData = [];
 let filteredData = [];
 
@@ -271,7 +276,17 @@ function logout() {
 async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL);
-    allData = await res.json();
+    let rawData = await res.json();
+
+    // Normalize keys
+    allData = rawData.map(row => {
+      const newRow = {};
+      for (let key in row) {
+        newRow[key.trim()] = row[key];
+      }
+      return newRow;
+    });
+
     filteredData = allData;
     displayData(allData);
   } catch (err) {
@@ -280,12 +295,14 @@ async function loadData() {
   }
 }
 
+// Display Table
 function displayData(data) {
   const tbody = document.querySelector("#requestsTable tbody");
   tbody.innerHTML = "";
   data.slice().reverse().forEach(row => {
     const status = row["Status"] || "Pending";
     const cssClass = getStatusClass(status);
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${row["Request ID"] || "-"}</td>
@@ -294,7 +311,7 @@ function displayData(data) {
       <td>${row["Email"] || "-"}</td>
       <td>${row["Mobile"] || "-"}</td>
       <td>${row["City & State"] || "-"}</td>
-      <td><button class="view-btn" onclick="viewMessage('${escapeHtml(row["Message"] || "No message")}')">👁️ View</button></td>
+      <td><button class="view-btn">👁️ View</button></td>
       <td>
         <select class="status ${cssClass}" onchange="updateStatus('${row["Request ID"]}', this.value, this)">
           <option ${status==="Pending"?"selected":""}>Pending</option>
@@ -306,6 +323,11 @@ function displayData(data) {
       <td>${row["Timestamp"] || "-"}</td>
     `;
     tbody.appendChild(tr);
+
+    // Add View button event listener
+    tr.querySelector(".view-btn").addEventListener("click", () => {
+      viewMessage(formatMessage(row));
+    });
   });
 }
 
@@ -319,7 +341,38 @@ function getStatusClass(status) {
   }
 }
 
-// Update status
+// Format message for View popup
+function formatMessage(row) {
+  let msg = `💬 Message: ${row["Message"] || "-"}\n\n`;
+  msg += `Role: ${row["Role"] || "-"}\n`;
+  if(row["Role"] === "Educator") {
+    msg += `Class Range: ${row["Class Range (Educator)"] || "-"}\n`;
+    msg += `Subject: ${row["Subject (Educator)"] || "-"}\n`;
+  } else if(row["Role"] === "Student" || row["Role"] === "Parent/Guardian") {
+    msg += `Class Range: ${row["Class Range (SP)"] || "-"}\n`;
+    msg += `Class: ${row["Class (SP)"] || "-"}\n`;
+    msg += `Subject: ${row["Subject (SP)"] || "-"}\n`;
+  }
+  msg += `Name: ${row["Name"] || "-"}\n`;
+  msg += `Email: ${row["Email"] || "-"}\n`;
+  msg += `Mobile: ${row["Mobile"] || "-"}\n`;
+  msg += `City & State: ${row["City & State"] || "-"}\n`;
+  msg += `Submitted: ${row["Timestamp"] || "-"}\n`;
+  msg += `Status: ${row["Status"] || "-"}`;
+  return msg;
+}
+
+// Modal
+function viewMessage(msg) {
+  const modal = document.getElementById("messageModal");
+  document.getElementById("modalMessage").innerText = msg;
+  modal.style.display = "flex";
+}
+function closeModal() {
+  document.getElementById("messageModal").style.display = "none";
+}
+
+// Status update
 async function updateStatus(requestId, newStatus, selectElement) {
   selectElement.className = "status " + getStatusClass(newStatus);
   try {
@@ -338,27 +391,13 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-// Modal message
-function viewMessage(msg) {
-  const modal = document.getElementById("messageModal");
-  document.getElementById("modalMessage").innerText = msg;
-  modal.style.display = "flex";
-}
-function closeModal() {
-  document.getElementById("messageModal").style.display = "none";
-}
-function escapeHtml(text) {
-  return text.replace(/"/g, '&quot;').replace(/'/g, "&#39;");
-}
-
 // Sidebar filter
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", function() {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
     this.classList.add("active");
     const status = this.dataset.status;
-    if (status === "All") filteredData = allData;
-    else filteredData = allData.filter(r => (r["Status"] || "Pending") === status);
+    filteredData = (status==="All") ? allData : allData.filter(r => (r["Status"] || "Pending") === status);
     displayData(filteredData);
   });
 });
