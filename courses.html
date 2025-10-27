@@ -1,50 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Courses | Online Academy Guru</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Side panel form */
+    #trialFormContainer {
+      position: fixed;
+      bottom: 0;
+      right: -400px;
+      width: 350px;
+      height: 64%;
+      background: #f9fafc;
+      border-left: 1px solid #ddd;
+      padding: 20px;
+      overflow-y: auto;
+      transition: 0.3s;
+      z-index: 1000;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+    }
+    #trialFormContainer.open { right: 0; }
+    #trialFormContainer h3 { margin-top: 0; }
+    #trialFormContainer form input,
+    #trialFormContainer form select,
+    #trialFormContainer form textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    #bookTrialBtn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #closeFormBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    /* Filters and course grid */
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .filters select, .filters input {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+      min-width: 150px;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 15px;
+    }
+    .course-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 15px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .course-card:hover { transform: translateY(-3px); }
+    .course-card h3 { color: #2a3d66; margin-top: 0; }
+    .course-card a {
+      display: inline-block;
+      background: #2a3d66;
+      color: #fff;
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    /* Recommendations */
+    .recommendations {
+      margin-top: 12px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      padding: 10px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .recommendations h4 {
+      margin: 0 0 8px;
+      color: #2a3d66;
+      font-size: 0.9rem;
+    }
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+    .recommend-card {
+      background: white;
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      font-size: 0.8rem;
+    }
+    .recommend-card h5 { margin: 0 0 5px; color: #2a3d66; }
+    .recommend-card a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+  </style>
 </head>
 <body>
-<header>
-  <div class="container header-content">
-    <h1 class="logo">🎓 Online Academy Guru</h1>
-    <p class="tagline">Empowering Students with Expert-Led Learning.</p>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="courses.html" class="active">Courses</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-  </div>
-</header>
+  <header>
+    <div class="container header-content">
+      <h1 class="logo">🎓 Online Academy Guru</h1>
+      <p class="tagline">Empowering Students with Expert-Led Learning.</p>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="courses.html" class="active">Courses</a>
+        <a href="contact.html">Contact Us</a>
+      </nav>
+    </div>
+  </header>
 
-<section class="content container">
-  <h2>Our Courses</h2>
-  <div class="courses-grid">
-    <div class="course-card">
-      <h3>Mathematics Mastery</h3>
-      <p>Expert-led sessions to build a strong foundation in mathematics.</p>
+  <section class="content container">
+    <div style="text-align: right; margin: 20px 0;">
+      <button id="bookTrialBtn">Book a Free Trial</button>
     </div>
-    <div class="course-card">
-      <h3>Science Simplified</h3>
-      <p>Interactive lessons to make science easy and exciting.</p>
-    </div>
-    <div class="course-card">
-      <h3>English Excellence</h3>
-      <p>Improve grammar, communication, and comprehension skills.</p>
-    </div>
-    <div class="course-card">
-      <h3>Exam Preparation</h3>
-      <p>Strategic coaching to excel in board exams and competitive tests.</p>
-    </div>
-  </div>
-</section>
 
-<footer>
-  <p>© 2025 Online Academy Guru. All rights reserved.</p>
-</footer>
+    <h2>Our Courses</h2>
+<div class="courses-grid"> <div class="course-card"> <h3>Mathematics Mastery</h3> <p>Expert-led sessions to build a strong foundation in mathematics.</p> </div> <div class="course-card"> <h3>Science Simplified</h3> <p>Interactive lessons to make science easy and exciting.</p> </div> <div class="course-card"> <h3>English Excellence</h3> <p>Improve grammar, communication, and comprehension skills.</p> </div> <div class="course-card"> <h3>Exam Preparation</h3> <p>Strategic coaching to excel in board exams and competitive tests.</p> </div> </div>
+
+    <div class="filters">
+      <select id="classFilter"><option value="">All Classes</option></select>
+      <select id="subjectFilter"><option value="">All Subjects</option></select>
+      <input type="text" id="searchInput" placeholder="🔍 Search by title..." />
+    </div>
+
+    <div class="courses-grid"></div>
+
+    <!-- Side Panel Form -->
+    <div id="trialFormContainer">
+      <button id="closeFormBtn">X</button>
+      <div id="formPage1">
+        <h3>Book Your Free Trial - Step 1</h3>
+        <form id="trialForm1">
+          <input type="text" name="studentName" placeholder="Student Name" required>
+          <input type="text" name="parentName" placeholder="Parent Name" required>
+          <input type="tel" name="mobile" placeholder="Mobile No." required>
+          <select name="class" required>
+            <option value="">Select Class</option>
+            <option>Class 1</option>
+            <option>Class 2</option>
+            <option>Class 3</option>
+          </select>
+          <select name="subject" required>
+            <option value="">Select Subjects/Courses</option>
+            <option>Math</option>
+            <option>Science</option>
+            <option>English</option>
+          </select>
+          <input type="text" name="city" placeholder="City" required>
+          <button type="submit">Next</button>
+        </form>
+      </div>
+
+      <div id="formPage2" style="display:none;">
+        <h3>Book Your Free Trial - Step 2</h3>
+        <form id="trialForm2">
+          <input type="hidden" name="studentName">
+          <input type="hidden" name="parentName">
+          <input type="hidden" name="mobile">
+          <input type="hidden" name="class">
+          <input type="hidden" name="subject">
+          <input type="hidden" name="city">
+
+          <label>Expected Course Fee Range:</label>
+          <select name="feeRange" required>
+            <option value="">Select Fee Range</option>
+            <option value="199-399">199-399</option>
+            <option value="399-599">399-599</option>
+            <option value="599-899">599-899</option>
+          </select>
+
+          <label>Select Date:</label>
+          <input type="date" name="preferredDate" required>
+
+          <label>Select Time:</label>
+          <select name="preferredTime" required>
+            <option value="">Select Time</option>
+            <option>10:00 AM</option>
+            <option>2:00 PM</option>
+            <option>5:00 PM</option>
+          </select>
+
+          <select name="language" required>
+            <option value="">Preferred Language</option>
+            <option>English</option>
+            <option>Hindi</option>
+          </select>
+
+          <input type="text" name="demoTopic" placeholder="Demo Topic">
+          <textarea name="additionalNote" placeholder="Additional Note (if any)"></textarea>
+
+          <label>
+            <input type="checkbox" name="terms" required>
+            I agree to the Terms and Conditions.
+          </label>
+
+          <button type="submit">Submit</button>
+        </form>
+        <div id="formSuccess" style="display:none;color:green;margin-top:10px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Online Academy Guru. All rights reserved.</p>
+  </footer>
+
+  <script>
+    /* --- Free Trial Form --- */
+    const bookBtn = document.getElementById('bookTrialBtn');
+    const container = document.getElementById('trialFormContainer');
+    const closeBtn = document.getElementById('closeFormBtn');
+    const page1 = document.getElementById('formPage1');
+    const page2 = document.getElementById('formPage2');
+    const form1 = document.getElementById('trialForm1');
+    const form2 = document.getElementById('trialForm2');
+    const successMsg = document.getElementById('formSuccess');
+
+    // Open and close form
+    bookBtn.addEventListener('click', () => {
+      container.classList.toggle('open');
+      page1.style.display = 'block';
+      page2.style.display = 'none';
+      successMsg.style.display = 'none';
+    });
+
+    closeBtn.addEventListener('click', () => {
+      container.classList.remove('open');
+      form1.reset();
+      form2.reset();
+      page1.style.display = 'block';
+      page2.style.display = 'none';
+      successMsg.style.display = 'none';
+      successMsg.innerHTML = "";
+    });
+
+    // Step 1 → Step 2
+    form1.addEventListener('submit', (e) => {
+      e.preventDefault();
+      ['studentName','parentName','mobile','class','subject','city']
+        .forEach(f => form2[f].value = form1[f].value);
+      page1.style.display = 'none';
+      page2.style.display = 'block';
+    });
+
+    // Submit → Google Sheet
+    form2.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form2);
+      fetch("https://script.google.com/macros/s/AKfycbxUMI6Qxws_LzicfqWfV6Ky2dq6Zz9doel3yw1JY7FHouqAoop_pIzN8eyasRBgs28/exec", {
+        method: 'POST',
+        body: data
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.result === 'success') {
+          successMsg.innerHTML = "✅ Your Free Trial request has been submitted.<br>🧾 Request ID: " + res.requestId;
+          successMsg.style.display = 'block';
+          setTimeout(() => {
+            container.classList.remove('open');
+            form1.reset();
+            form2.reset();
+            page1.style.display = 'block';
+            page2.style.display = 'none';
+            successMsg.style.display = 'none';
+          }, 5000);
+        } else {
+          alert('Submission failed');
+        }
+      })
+      .catch(() => alert('Submission failed'));
+    });
+
+    /* --- Courses Dynamic Loader --- */
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbyz7BhLYel26C8yedQd1HexC2SPbVfDyzAH14uZ3ljlM9uC5UElEVla8m91iB7N0oQU/exec";
+    let allCourses = [], expandedCard = null;
+
+    async function loadCourses() {
+      const res = await fetch(SHEET_URL);
+      const data = await res.json();
+      allCourses = data.filter(c => c.Title && c.PDF_URL);
+      renderFilters();
+      renderCourses(allCourses);
+    }
+
+    function renderFilters() {
+      const classes = [...new Set(allCourses.map(c => c.Class).filter(Boolean))].sort();
+      const subjects = [...new Set(allCourses.map(c => c.Subject).filter(Boolean))].sort();
+      const classSel = document.getElementById('classFilter');
+      const subjSel = document.getElementById('subjectFilter');
+      classes.forEach(cls => {
+        const o = document.createElement('option');
+        o.textContent = cls;
+        o.value = cls;
+        classSel.appendChild(o);
+      });
+      subjects.forEach(s => {
+        const o = document.createElement('option');
+        o.textContent = s;
+        o.value = s;
+        subjSel.appendChild(o);
+      });
+    }
+
+    function renderCourses(list) {
+      const grid = document.querySelector('.courses-grid');
+      grid.innerHTML = '';
+      list.forEach((c, i) => {
+        const card = document.createElement('div');
+        card.className = 'course-card';
+        card.innerHTML = `
+          <h3>${c.Title}</h3>
+          <p><strong>Class:</strong> ${c.Class}</p>
+          <p><strong>Subject:</strong> ${c.Subject}</p>
+          <p>${c.Description || ''}</p>
+          <a href="${c.PDF_URL}" target="_blank">📘 View PDF</a>
+        `;
+        card.addEventListener('click', () => toggleRecommendations(i, card, c));
+        grid.appendChild(card);
+      });
+    }
+
+    function toggleRecommendations(index, card, course) {
+      if (expandedCard && expandedCard !== card) {
+        const prevRec = expandedCard.querySelector('.recommendations');
+        if (prevRec) prevRec.remove();
+      }
+      const existing = card.querySelector('.recommendations');
+      if (existing) { existing.remove(); expandedCard = null; return; }
+
+      const related = allCourses.filter(c =>
+        c !== course && (c.Subject === course.Subject || c.Class === course.Class)
+      ).slice(0, 3);
+
+      if (!related.length) { expandedCard = null; return; }
+
+      const box = document.createElement('div');
+      box.className = 'recommendations';
+      box.innerHTML = '<h4>Recommended Courses</h4>';
+      const grid = document.createElement('div');
+      grid.className = 'recommend-grid';
+      related.forEach(r => {
+        const rc = document.createElement('div');
+        rc.className = 'recommend-card';
+        rc.innerHTML = `<h5>${r.Title}</h5><p>${r.Description || ''}</p><a href="${r.PDF_URL}" target="_blank">View PDF</a>`;
+        grid.appendChild(rc);
+      });
+      box.appendChild(grid);
+      card.appendChild(box);
+      expandedCard = card;
+    }
+
+    ['classFilter', 'subjectFilter', 'searchInput'].forEach(id => {
+      document.getElementById(id).addEventListener('input', applyFilters);
+    });
+
+    function applyFilters() {
+      const cls = document.getElementById('classFilter').value;
+      const sub = document.getElementById('subjectFilter').value;
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allCourses.filter(c =>
+        (!cls || c.Class === cls) &&
+        (!sub || c.Subject === sub) &&
+        (!q || (c.Title || '').toLowerCase().includes(q))
+      );
+      renderCourses(filtered);
+    }
+
+    loadCourses();
+  </script>
 </body>
 </html>
 
