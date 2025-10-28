@@ -5,6 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About | Online Academy Guru</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .about-section {
+      background: #f9fafc;
+      padding: 60px 20px;
+      border-radius: 12px;
+      line-height: 1.7;
+    }
+    .about-section h2 {
+      text-align: center;
+      color: #2a3d66;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    .about-section p {
+      max-width: 900px;
+      margin: 10px auto;
+      font-size: 1.05rem;
+      color: #333;
+      text-align: center;
+    }
+    .values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+      text-align: center;
+    }
+    .value-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .value-card:hover {
+      transform: translateY(-5px);
+    }
+    .value-card h4 {
+      color: #2a3d66;
+      margin-bottom: 10px;
+    }
+    .value-card p {
+      font-size: 0.95rem;
+      color: #444;
+    }
+    .founder {
+      text-align: center;
+      margin-top: 50px;
+    }
+    .founder img {
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .founder h4 {
+      color: #2a3d66;
+      margin: 5px 0;
+    }
+    .founder p {
+      color: #555;
+      font-size: 0.95rem;
+    }
+  </style>
 </head>
 <body>
 <header>
@@ -20,15 +85,41 @@
   </div>
 </header>
 
-<section class="content container">
-  <h2>About Us</h2>
+<section class="content container about-section">
+  <h2>About Online Academy Guru</h2>
   <p>
-    <strong>Online Academy Guru</strong> is your premier online learning platform.  
-    We connect students with highly qualified subject expert tutors to empower their success.
+    <strong>Online Academy Guru</strong> is more than just an online learning platform — it’s a space where passion for teaching meets the power of technology.
+    We bring together experienced educators and motivated learners through personalized, high-quality online sessions that build skills for life.
   </p>
   <p>
-    Our mission is to provide personalized and interactive educational support that helps students build knowledge, confidence, and skills for the future.
+    From foundational subjects to advanced concepts, our expert tutors tailor lessons to each student’s learning style, pace, and goals.
+    We believe that the right guidance can turn curiosity into confidence and effort into excellence.
   </p>
+
+  <div class="values">
+    <div class="value-card">
+      <h4>🌟 Our Vision</h4>
+      <p>To redefine learning by making quality education accessible, engaging, and adaptive for every student, everywhere.</p>
+    </div>
+    <div class="value-card">
+      <h4>🎯 Our Mission</h4>
+      <p>To connect students with passionate educators who inspire growth, foster curiosity, and unlock true academic potential.</p>
+    </div>
+    <div class="value-card">
+      <h4>💡 Our Approach</h4>
+      <p>Interactive one-on-one sessions, practical learning techniques, and continuous feedback ensure each student thrives.</p>
+    </div>
+  </div>
+
+  <div class="founder">
+    <img src="tutor1.jpg" alt="Founder Vikas Kumar">
+    <h4>Vikas Kumar</h4>
+    <p>Founder & Mathematics Expert</p>
+    <p>
+      With years of experience in education and mentoring, Vikas Kumar founded Online Academy Guru with a simple goal —
+      to make quality tutoring accessible and meaningful for every learner.
+    </p>
+  </div>
 </section>
 
 <footer>
