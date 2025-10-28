@@ -1,11 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online Academy Guru</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    /* Floating Search AI tab */
+    #searchAiBtn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #2a3d66;
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      z-index: 1000;
+      transition: background 0.3s;
+    }
+    #searchAiBtn:hover { background: #1f2f54; }
+
+    /* Popup */
+    #aiPopup {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 25px;
+      background: #fff;
+      width: 380px;
+      max-height: 540px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      z-index: 1001;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #aiHeader {
+      background: #2a3d66;
+      color: #fff;
+      padding: 10px;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1rem;
+    }
+    #aiMessages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+    #aiForm {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    #aiInput {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    #aiSend {
+      background: #2a3d66;
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    #aiSend:hover { background: #1f2f54; }
+  </style>
 </head>
 <body>
 <header>
@@ -50,7 +120,7 @@
     <div class="tutor-card">
       <img src="tutor1.jpg" alt="Tutor">
       <h4>Mr. Vikas Kumar</h4>
-      <p>Founder, Onlineacademyguru</p>
+      <p>Founder, Online Academy Guru</p>
       <p>Mathematics Expert</p>
     </div>
     <div class="tutor-card">
@@ -81,6 +151,69 @@
 <footer>
   <p>© 2025 Online Academy Guru. All rights reserved.</p>
 </footer>
+
+<!-- Floating Search AI Button -->
+<button id="searchAiBtn">🤖 Search AI</button>
+
+<!-- AI Chat Popup -->
+<div id="aiPopup">
+  <div id="aiHeader">Ask any Question with AI</div>
+  <div id="aiMessages"></div>
+  <form id="aiForm">
+    <input id="aiInput" placeholder="Ask your question..." autocomplete="off" />
+    <button id="aiSend" type="submit">Send</button>
+  </form>
+</div>
+
+<script>
+  // Replace with your deployed Apps Script web app link:
+  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcz1Y6AQ717Hgi6w8n7eUT5eHVsNGR1gDniTcF1TmTNGo9UFRd9ajuGLPQh6PqACrD/exec";
+
+  const popup = document.getElementById('aiPopup');
+  const btn = document.getElementById('searchAiBtn');
+  const form = document.getElementById('aiForm');
+  const input = document.getElementById('aiInput');
+  const msgs = document.getElementById('aiMessages');
+
+  // Toggle popup visibility
+  btn.onclick = () => {
+    popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
+  };
+
+  // Function to send user question to Apps Script backend
+  async function callAI(question) {
+    try {
+      const res = await fetch(APP_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+      const data = await res.json();
+      return data.answer || "No response from AI.";
+    } catch (err) {
+      console.error(err);
+      return "⚠️ Error connecting to AI service.";
+    }
+  }
+
+  // Handle chat submission
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+
+    msgs.innerHTML += `<div><strong>You:</strong> ${question}</div>`;
+    input.value = "";
+    msgs.scrollTop = msgs.scrollHeight;
+
+    msgs.innerHTML += `<div><em>AI is thinking...</em></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+
+    const reply = await callAI(question);
+    msgs.lastElementChild.innerHTML = `<strong>AI:</strong> ${reply}`;
+    msgs.scrollTop = msgs.scrollHeight;
+  });
+</script>
 </body>
 </html>
 
