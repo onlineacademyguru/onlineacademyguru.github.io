@@ -238,7 +238,9 @@ function displayActiveRequests(){
 }
 
 /* Load data */
-async function loadTrialRequests(){try{const r=await fetch(TRIAL_SCRIPT_URL);const d=await r.json();trialRequests=Array.isArray(d)?d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}):[];displayTrialRequests(trialRequests);}catch(e){console.error(e);}}
+async function loadTrialRequests(){try{const r=await fetch(TRIAL_SCRIPT_URL);const d=await r.json();trialRequests=Array.isArray(d)?
+d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}):[];displayTrialRequests(trialRequests);}catch(e){console.error(e);}}
+
 async function loadContactRequests(){try{const r=await fetch(CONTACT_SCRIPT_URL);const d=await r.json();contactRequests=Array.isArray(d)?d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}):[];displayContactRequests(contactRequests);}catch(e){console.error(e);}}
 
 /* Display tables */

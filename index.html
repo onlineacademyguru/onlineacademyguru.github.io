@@ -7,74 +7,89 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="favicon.ico" />
   <style>
-    /* Floating Search AI tab */
-    #searchAiBtn {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: #2a3d66;
-      color: #fff;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 50px;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-      z-index: 1000;
-      transition: background 0.3s;
-    }
-    #searchAiBtn:hover { background: #1f2f54; }
-
-    /* Popup */
-    #aiPopup {
-      display: none;
-      position: fixed;
-      bottom: 80px;
-      right: 25px;
-      background: #fff;
-      width: 380px;
-      max-height: 540px;
-      border-radius: 10px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-      z-index: 1001;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    #aiHeader {
-      background: #2a3d66;
-      color: #fff;
-      padding: 10px;
-      font-weight: 600;
+    /* AI Search Section */
+    .ai-search {
       text-align: center;
-      font-size: 1rem;
+      padding: 30px 15px;
+      background: #fff;
+      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-    #aiMessages {
-      flex: 1;
-      padding: 12px;
-      overflow-y: auto;
-      font-size: 0.95rem;
-      line-height: 1.4;
+    .ai-search h3 {
+      color: #2a3d66;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
     }
     #aiForm {
       display: flex;
-      border-top: 1px solid #ddd;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     #aiInput {
-      flex: 1;
-      border: none;
+      width: 70%;
+      max-width: 480px;
       padding: 10px;
-      font-size: 0.95rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
       outline: none;
     }
     #aiSend {
       background: #2a3d66;
       color: #fff;
       border: none;
-      padding: 10px 14px;
+      padding: 10px 16px;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 1rem;
     }
-    #aiSend:hover { background: #1f2f54; }
+    #aiSend:hover {
+      background: #1f2f54;
+    }
+
+    /* Chat box */
+    #aiChat {
+      margin-top: 18px;
+      max-width: 720px;
+      margin-inline: auto;
+      background: #f9fafc;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 16px;
+      text-align: left;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .msg {
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: 85%;
+      word-wrap: break-word;
+    }
+    .user {
+      background: #2a3d66;
+      color: #fff;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+    .ai {
+      background: #e8ecf8;
+      color: #333;
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+    }
+    @keyframes blink {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+    .typing span {
+      animation: blink 1.2s infinite;
+    }
   </style>
 </head>
 <body>
@@ -97,6 +112,16 @@
     <p>Your premier online learning platform connecting students with expert tutors for interactive, personalized learning.</p>
     <a href="courses.html" class="btn">Explore Courses</a>
   </div>
+</section>
+
+<!-- ✅ AI Search placed BELOW hero -->
+<section class="ai-search">
+  <h3>🔍 Search with AI Tutor</h3>
+  <form id="aiForm">
+    <input id="aiInput" placeholder="Ask your question..." autocomplete="off" />
+    <button id="aiSend" type="submit">Search</button>
+  </form>
+  <div id="aiChat"></div>
 </section>
 
 <section class="features container">
@@ -144,7 +169,7 @@
   </div>
   <div class="testimonial">
     <p>"The personalized classes helped me improve my grades and confidence."</p>
-    <span>- Rohit S.</span>
+ <span>-Rohit S.</span>
   </div>
 </section>
 
@@ -152,35 +177,12 @@
   <p>© 2025 Online Academy Guru. All rights reserved.</p>
 </footer>
 
-<!-- Floating Search AI Button -->
-<button id="searchAiBtn">🤖 Search AI</button>
-
-<!-- AI Chat Popup -->
-<div id="aiPopup">
-  <div id="aiHeader">Ask any Question with AI</div>
-  <div id="aiMessages"></div>
-  <form id="aiForm">
-    <input id="aiInput" placeholder="Ask your question..." autocomplete="off" />
-    <button id="aiSend" type="submit">Send</button>
-  </form>
-</div>
-
 <script>
-  // Replace with your deployed Apps Script web app link:
   const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcz1Y6AQ717Hgi6w8n7eUT5eHVsNGR1gDniTcF1TmTNGo9UFRd9ajuGLPQh6PqACrD/exec";
+  const form = document.getElementById("aiForm");
+  const input = document.getElementById("aiInput");
+  const chat = document.getElementById("aiChat");
 
-  const popup = document.getElementById('aiPopup');
-  const btn = document.getElementById('searchAiBtn');
-  const form = document.getElementById('aiForm');
-  const input = document.getElementById('aiInput');
-  const msgs = document.getElementById('aiMessages');
-
-  // Toggle popup visibility
-  btn.onclick = () => {
-    popup.style.display = (popup.style.display === 'flex') ? 'none' : 'flex';
-  };
-
-  // Function to send user question to Apps Script backend
   async function callAI(question) {
     try {
       const res = await fetch(APP_SCRIPT_URL, {
@@ -196,22 +198,37 @@
     }
   }
 
-  // Handle chat submission
+  function appendMessage(text, sender) {
+    const div = document.createElement("div");
+    div.className = `msg ${sender}`;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.style.display = "block";
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function showTyping() {
+    const div = document.createElement("div");
+    div.className = "msg ai typing";
+    div.innerHTML = "<span>●</span> <span>●</span> <span>●</span>";
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return div;
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const question = input.value.trim();
     if (!question) return;
 
-    msgs.innerHTML += `<div><strong>You:</strong> ${question}</div>`;
+    appendMessage(question, "user");
     input.value = "";
-    msgs.scrollTop = msgs.scrollHeight;
 
-    msgs.innerHTML += `<div><em>AI is thinking...</em></div>`;
-    msgs.scrollTop = msgs.scrollHeight;
-
+    const typing = showTyping();
     const reply = await callAI(question);
-    msgs.lastElementChild.innerHTML = `<strong>AI:</strong> ${reply}`;
-    msgs.scrollTop = msgs.scrollHeight;
+    typing.remove();
+
+    appendMessage(reply, "ai");
   });
 </script>
 </body>
