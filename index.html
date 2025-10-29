@@ -169,7 +169,7 @@
   </div>
   <div class="testimonial">
     <p>"The personalized classes helped me improve my grades and confidence."</p>
- <span>-Rohit S.</span>
+    <span>- Rohit S.</span>
   </div>
 </section>
 
@@ -177,21 +177,25 @@
   <p>© 2025 Online Academy Guru. All rights reserved.</p>
 </footer>
 
+<!-- ✅ Updated AI Script -->
 <script>
-  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwcz1Y6AQ717Hgi6w8n7eUT5eHVsNGR1gDniTcF1TmTNGo9UFRd9ajuGLPQh6PqACrD/exec";
+  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxoLQyw97JLxB5rWzIfKgiqfaO9bkEqwtvePLmXtTX21F9n8EgkrtAPiNAUfhcoulel/exec";
+
   const form = document.getElementById("aiForm");
   const input = document.getElementById("aiInput");
   const chat = document.getElementById("aiChat");
 
-  async function callAI(question) {
+  async function callAI(prompt) {
     try {
       const res = await fetch(APP_SCRIPT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
+        body: JSON.stringify({ prompt }) // ✅ matches backend field
       });
+
+      if (!res.ok) throw new Error("Network error");
       const data = await res.json();
-      return data.answer || "No response from AI.";
+      return data.reply || "No response from AI."; // ✅ matches backend key
     } catch (err) {
       console.error(err);
       return "⚠️ Error connecting to AI service.";
@@ -231,6 +235,7 @@
     appendMessage(reply, "ai");
   });
 </script>
+
 </body>
 </html>
 
