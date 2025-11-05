@@ -179,19 +179,14 @@
 
 <!-- ✅ Updated AI Script -->
 <script>
-  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvJF7f8eOzi5cyLdopM_58SFFcElKeXwBrdsO3zxxJHI7UXwMsjrDkwaJKmcZJjn3P/exec";
+const PROXY = "https://corsproxy.io/?";
+const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoM_5nXg8GDn8nbVakePVEnMdrlaiRX0KTrPwCWTNckSuEDj7pGK9W8QXc1QjwWt9G/exec";
 
-  const form = document.getElementById("aiForm");
-  const input = document.getElementById("aiInput");
-  const chat = document.getElementById("aiChat");
-
-  async function callAI(prompt) {
-    try {
-      const res = await fetch(APP_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }) // ✅ matches backend field
-      });
+const res = await fetch(PROXY + APP_SCRIPT_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ prompt })
+});
 
       if (!res.ok) throw new Error("Network error");
       const data = await res.json();

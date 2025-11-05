@@ -239,169 +239,197 @@
     <p>© 2025 Online Academy Guru. All rights reserved.</p>
   </footer>
 
-  <script>
-    /* --- Free Trial Form --- */
-    const bookBtn = document.getElementById('bookTrialBtn');
-    const container = document.getElementById('trialFormContainer');
-    const closeBtn = document.getElementById('closeFormBtn');
-    const page1 = document.getElementById('formPage1');
-    const page2 = document.getElementById('formPage2');
-    const form1 = document.getElementById('trialForm1');
-    const form2 = document.getElementById('trialForm2');
-    const successMsg = document.getElementById('formSuccess');
+<script>
 
-    // Open and close form
-    bookBtn.addEventListener('click', () => {
-      container.classList.toggle('open');
-      page1.style.display = 'block';
-      page2.style.display = 'none';
-      successMsg.style.display = 'none';
-    });
+const bookBtn = document.getElementById('bookTrialBtn');
+const container = document.getElementById('trialFormContainer');
+const closeBtn = document.getElementById('closeFormBtn');
+const page1 = document.getElementById('formPage1');
+const page2 = document.getElementById('formPage2');
+const form1 = document.getElementById('trialForm1');
+const form2 = document.getElementById('trialForm2');
+const successMsg = document.getElementById('formSuccess');
 
-    closeBtn.addEventListener('click', () => {
-      container.classList.remove('open');
-      form1.reset();
-      form2.reset();
-      page1.style.display = 'block';
-      page2.style.display = 'none';
-      successMsg.style.display = 'none';
-      successMsg.innerHTML = "";
-    });
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby101dEXoB0EmmlzOS_5ZJN1hwyMYXZPVwidgGF1bkhRtUIlwE4OXOO5EGNdn9IJzXH/exec";
 
-    // Step 1 → Step 2
-    form1.addEventListener('submit', (e) => {
-      e.preventDefault();
-      ['studentName','parentName','mobile','class','subject','city']
-        .forEach(f => form2[f].value = form1[f].value);
-      page1.style.display = 'none';
-      page2.style.display = 'block';
-    });
+// Open & close form
+bookBtn.addEventListener('click', () => {
+  container.classList.add('open');
+  page1.style.display = 'block';
+  page2.style.display = 'none';
+  successMsg.style.display = 'none';
+  successMsg.innerHTML = "";
+});
 
-    // Submit → Google Sheet
-    form2.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = new FormData(form2);
-      fetch("https://script.google.com/macros/s/AKfycbyXCQupqIcF24_jaL__VjdifrnbzKL2d3xtxFO6dqhF2v8kUjktczL_Ufi9F2_xl2dj/exec", {
-        method: 'POST',
-        body: data
-      })
-      .then(r => r.json())
-      .then(res => {
-        if (res.result === 'success') {
-          successMsg.innerHTML = "✅ Your Free Trial request has been submitted.<br>🧾 Request ID: " + res.requestId;
-          successMsg.style.display = 'block';
-          setTimeout(() => {
-            container.classList.remove('open');
-            form1.reset();
-            form2.reset();
-            page1.style.display = 'block';
-            page2.style.display = 'none';
-            successMsg.style.display = 'none';
-          }, 5000);
-        } else {
-          alert('Submission failed');
-        }
-      })
-      .catch(() => alert('Submission failed'));
-    });
+closeBtn.addEventListener('click', () => {
+  container.classList.remove('open');
+  form1.reset();
+  form2.reset();
+  page1.style.display = 'block';
+  page2.style.display = 'none';
+  successMsg.style.display = 'none';
+  successMsg.innerHTML = "";
+});
 
-    /* --- Courses Dynamic Loader --- */
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbyz7BhLYel26C8yedQd1HexC2SPbVfDyzAH14uZ3ljlM9uC5UElEVla8m91iB7N0oQU/exec";
-    let allCourses = [], expandedCard = null;
+// Step 1 → Step 2
+form1.addEventListener('submit', (e) => {
+  e.preventDefault();
+  ['studentName','parentName','mobile','class','subject','city']
+    .forEach(f => form2[f].value = form1[f].value);
+  page1.style.display = 'none';
+  page2.style.display = 'block';
+});
 
-    async function loadCourses() {
-      const res = await fetch(SHEET_URL);
-      const data = await res.json();
-      allCourses = data.filter(c => c.Title && c.PDF_URL);
-      renderFilters();
-      renderCourses(allCourses);
+// Step 2 → Submit
+form2.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if(!form2.terms.checked){
+    alert("You must agree to the Terms and Conditions.");
+    return;
+  }
+
+  const data = new FormData(form2);
+
+  try {
+    const response = await fetch(SCRIPT_URL, { method: 'POST', body: data });
+   const text = await response.text();
+  console.log("Server response:", text);
+  const res = JSON.parse(text);
+
+    if(res.result === "success") {
+      // Fetch status of this Request ID
+      const allRecordsResp = await fetch(SCRIPT_URL);
+      const allRecords = await allRecordsResp.json();
+      const record = allRecords.find(r => r["Request ID"] === res.requestId);
+      const status = record && record["Status"] ? record["Status"] : "Pending";
+
+      successMsg.innerHTML = `
+        ✅ Your Free Trial request has been submitted.<br>
+        🧾 Request ID: ${res.requestId}<br>
+        🟢 Status: ${status}
+      `;
+      successMsg.style.display = 'block';
+
+      setTimeout(() => {
+        container.classList.remove('open');
+        form1.reset();
+        form2.reset();
+        page1.style.display = 'block';
+        page2.style.display = 'none';
+        successMsg.style.display = 'none';
+        successMsg.innerHTML = "";
+      }, 7000);
+
+    } else {
+      console.error("Submission error:", res);
+      alert("❌ Submission failed. Please try again later.");
     }
 
-    function renderFilters() {
-      const classes = [...new Set(allCourses.map(c => c.Class).filter(Boolean))].sort();
-      const subjects = [...new Set(allCourses.map(c => c.Subject).filter(Boolean))].sort();
-      const classSel = document.getElementById('classFilter');
-      const subjSel = document.getElementById('subjectFilter');
-      classes.forEach(cls => {
-        const o = document.createElement('option');
-        o.textContent = cls;
-        o.value = cls;
-        classSel.appendChild(o);
-      });
-      subjects.forEach(s => {
-        const o = document.createElement('option');
-        o.textContent = s;
-        o.value = s;
-        subjSel.appendChild(o);
-      });
-    }
+  } catch(err) {
+    console.error("Fetch error:", err);
+    alert("❌ Submission failed. Please check your internet connection.");
+  }
+});
 
-    function renderCourses(list) {
-      const grid = document.querySelector('.courses-grid');
-      grid.innerHTML = '';
-      list.forEach((c, i) => {
-        const card = document.createElement('div');
-        card.className = 'course-card';
-        card.innerHTML = `
-          <h3>${c.Title}</h3>
-          <p><strong>Class:</strong> ${c.Class}</p>
-          <p><strong>Subject:</strong> ${c.Subject}</p>
-          <p>${c.Description || ''}</p>
-          <a href="${c.PDF_URL}" target="_blank">📘 View PDF</a>
-        `;
-        card.addEventListener('click', () => toggleRecommendations(i, card, c));
-        grid.appendChild(card);
-      });
-    }
+/* --- Courses Loader / Filters (unchanged) --- */
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyz7BhLYel26C8yedQd1HexC2SPbVfDyzAH14uZ3ljlM9uC5UElEVla8m91iB7N0oQU/exec";
+let allCourses = [], expandedCard = null;
 
-    function toggleRecommendations(index, card, course) {
-      if (expandedCard && expandedCard !== card) {
-        const prevRec = expandedCard.querySelector('.recommendations');
-        if (prevRec) prevRec.remove();
-      }
-      const existing = card.querySelector('.recommendations');
-      if (existing) { existing.remove(); expandedCard = null; return; }
+async function loadCourses() {
+  const res = await fetch(SHEET_URL);
+  const data = await res.json();
+  allCourses = data.filter(c => c.Title && c.PDF_URL);
+  renderFilters();
+  renderCourses(allCourses);
+}
 
-      const related = allCourses.filter(c =>
-        c !== course && (c.Subject === course.Subject || c.Class === course.Class)
-      ).slice(0, 3);
+function renderFilters() {
+  const classes = [...new Set(allCourses.map(c => c.Class).filter(Boolean))].sort();
+  const subjects = [...new Set(allCourses.map(c => c.Subject).filter(Boolean))].sort();
+  const classSel = document.getElementById('classFilter');
+  const subjSel = document.getElementById('subjectFilter');
+  classes.forEach(cls => {
+    const o = document.createElement('option');
+    o.textContent = cls;
+    o.value = cls;
+    classSel.appendChild(o);
+  });
+  subjects.forEach(s => {
+    const o = document.createElement('option');
+    o.textContent = s;
+    o.value = s;
+    subjSel.appendChild(o);
+  });
+}
 
-      if (!related.length) { expandedCard = null; return; }
+function renderCourses(list) {
+  const grid = document.querySelector('.courses-grid');
+  grid.innerHTML = '';
+  list.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'course-card';
+    card.innerHTML = `
+      <h3>${c.Title}</h3>
+      <p><strong>Class:</strong> ${c.Class}</p>
+      <p><strong>Subject:</strong> ${c.Subject}</p>
+      <p>${c.Description || ''}</p>
+      <a href="${c.PDF_URL}" target="_blank">📘 View PDF</a>
+    `;
+    card.addEventListener('click', () => toggleRecommendations(i, card, c));
+    grid.appendChild(card);
+  });
+}
 
-      const box = document.createElement('div');
-      box.className = 'recommendations';
-      box.innerHTML = '<h4>Recommended Courses</h4>';
-      const grid = document.createElement('div');
-      grid.className = 'recommend-grid';
-      related.forEach(r => {
-        const rc = document.createElement('div');
-        rc.className = 'recommend-card';
-        rc.innerHTML = `<h5>${r.Title}</h5><p>${r.Description || ''}</p><a href="${r.PDF_URL}" target="_blank">View PDF</a>`;
-        grid.appendChild(rc);
-      });
-      box.appendChild(grid);
-      card.appendChild(box);
-      expandedCard = card;
-    }
+function toggleRecommendations(index, card, course) {
+  if (expandedCard && expandedCard !== card) {
+    const prevRec = expandedCard.querySelector('.recommendations');
+    if (prevRec) prevRec.remove();
+  }
+  const existing = card.querySelector('.recommendations');
+  if (existing) { existing.remove(); expandedCard = null; return; }
 
-    ['classFilter', 'subjectFilter', 'searchInput'].forEach(id => {
-      document.getElementById(id).addEventListener('input', applyFilters);
-    });
+  const related = allCourses.filter(c =>
+    c !== course && (c.Subject === course.Subject || c.Class === course.Class)
+  ).slice(0, 3);
 
-    function applyFilters() {
-      const cls = document.getElementById('classFilter').value;
-      const sub = document.getElementById('subjectFilter').value;
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      const filtered = allCourses.filter(c =>
-        (!cls || c.Class === cls) &&
-        (!sub || c.Subject === sub) &&
-        (!q || (c.Title || '').toLowerCase().includes(q))
-      );
-      renderCourses(filtered);
-    }
+  if (!related.length) { expandedCard = null; return; }
 
-    loadCourses();
-  </script>
+  const box = document.createElement('div');
+  box.className = 'recommendations';
+  box.innerHTML = '<h4>Recommended Courses</h4>';
+  const grid = document.createElement('div');
+  grid.className = 'recommend-grid';
+  related.forEach(r => {
+    const rc = document.createElement('div');
+    rc.className = 'recommend-card';
+    rc.innerHTML = `<h5>${r.Title}</h5><p>${r.Description || ''}</p><a href="${r.PDF_URL}" target="_blank">View PDF</a>`;
+    grid.appendChild(rc);
+  });
+  box.appendChild(grid);
+  card.appendChild(box);
+  expandedCard = card;
+}
+
+['classFilter', 'subjectFilter', 'searchInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', applyFilters);
+});
+
+function applyFilters() {
+  const cls = document.getElementById('classFilter').value;
+  const sub = document.getElementById('subjectFilter').value;
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allCourses.filter(c =>
+    (!cls || c.Class === cls) &&
+    (!sub || c.Subject === sub) &&
+    (!q || (c.Title || '').toLowerCase().includes(q))
+  );
+  renderCourses(filtered);
+}
+
+loadCourses();
+
+    </script>
 </body>
 </html>
 
