@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Admin Dashboard | Online Academy Guru</title>
+<title>Admin Dashboard | 🎓 Online Academy Guru</title>
 <style>
   body { font-family: "Segoe UI", Arial, sans-serif; background: #f8fafc; margin: 0; display: flex; min-height: 100vh; }
 
@@ -61,6 +61,11 @@
   #courseForm input,#courseForm textarea,#courseForm select { width:100%; padding:8px; margin-bottom:10px; border-radius:6px; border:1px solid #d1d5db; box-sizing:border-box; }
   #courseForm button { background:#2a3d66; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
 
+  /* Tutor forms */
+  #tutorForm, #tutorLoginForm, #tutorScheduleForm { background:#fff; padding:14px; border-radius:8px; max-width:820px; box-shadow:0 2px 6px rgba(0,0,0,0.06); margin-bottom:16px;}
+  #tutorForm input,#tutorForm textarea,#tutorForm select, #tutorLoginForm input, #tutorScheduleForm input, #tutorScheduleForm textarea { width:100%; padding:8px; margin-bottom:10px; border-radius:6px; border:1px solid #d1d5db; box-sizing:border-box; }
+  #tutorForm button,#tutorLoginForm button,#tutorScheduleForm button { background:#2a3d66; color:#fff; border:none; padding:8px 14px; border-radius:6px; cursor:pointer; }
+
   /* Modal & toast */
   .modal { display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; }
   .modal-content { background:#fff; padding:18px; border-radius:10px; width:90%; max-width:760px; box-shadow:0 8px 30px rgba(0,0,0,0.15); }
@@ -70,17 +75,20 @@
   .toast { visibility:hidden; min-width:220px; background:#16a34a; color:#fff; text-align:center; border-radius:8px; padding:12px; position:fixed; z-index:9999; left:50%; bottom:30px; transform:translateX(-50%); opacity:0; transition:opacity .35s, bottom .35s; }
   .toast.show { visibility:visible; opacity:1; bottom:50px; }
 
+  .inline-small { display:inline-block; margin-right:8px; vertical-align:middle; }
+  .muted { color:#6b7280; font-size:0.9rem; }
+
   @media (max-width:900px){ .sidebar{display:none;} .search-box input{width:100%;} body{padding-top:60px;} }
 </style>
 </head>
 <body>
   <div class="sidebar">
-    <div class="brand">Online Academy Guru</div>
+    <div class="brand">🎓 Online Academy Guru</div>
 
     <!-- Free Trial -->
-    <div class="main-tab" data-tab="trial">📋 Free Trial Form Requests</div>
+    <div class="main-tab active" data-tab="trial">📋 Free Trial Form Requests</div>
     <div class="subtabs" id="trial-subtabs">
-      <div class="subtab" data-parent="trial" data-status="Pending">Pending</div>
+      <div class="subtab active" data-parent="trial" data-status="Pending">Pending</div>
       <div class="subtab" data-parent="trial" data-status="In Progress">In Progress</div>
       <div class="subtab" data-parent="trial" data-status="Replied">Replied</div>
       <div class="subtab" data-parent="trial" data-status="Completed">Completed</div>
@@ -97,19 +105,24 @@
 
     <!-- Manage Courses -->
     <div class="main-tab" data-tab="courses">📚 Manage Courses</div>
+
+    <!-- Tutors -->
+    <div class="main-tab" data-tab="tutors">👩‍🏫 Tutors</div>
   </div>
 
   <div class="main-content">
     <div class="top-bar">
       <div class="search-box"><input id="searchInput" placeholder="🔍 Search by name, email, mobile, or ID..." /></div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
     </div>
 
     <!-- Trial -->
     <section id="trialSection">
       <h3>Free Trial Form Requests</h3>
       <table id="trialTable">
-        <thead><tr><th>Request ID</th><th>Student</th><th>Parent</th><th>Mobile</th><th>Class</th><th>Subject</th><th>View</th><th>Status</th><th>Submitted</th></tr></thead>
+        <thead><tr><th>Request ID</th><th>Student</th><th>Parent</th><th>Mobile</th><th>Class</th><th>Subject</th><th>Assigned Tutor</th><th>View</th><th>Status</th><th>Submitted</th></tr></thead>
         <tbody></tbody>
       </table>
     </section>
@@ -149,18 +162,88 @@
       </div>
     </section>
 
+    <!-- Tutors Section -->
+    <section id="tutorsSection" style="display:none;">
+      <h3>Manage Tutors & Tutor Login</h3>
+
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:280px;">
+          <h4>Register Tutor (Admin)</h4>
+          <form id="tutorForm">
+            <input name="Name" placeholder="Tutor Name" required />
+            <input name="Email" placeholder="Tutor Email" type="email" required />
+            <input name="Password" placeholder="Password" type="password" required />
+            <input name="Subjects" placeholder="Subjects (comma separated)" />
+            <div style="text-align:right"><button type="submit">Create Tutor</button></div>
+            <div id="tutorMsg" style="margin-top:8px;color:green;"></div>
+          </form>
+
+          <h4 style="margin-top:14px;">Registered Tutors</h4>
+          <div id="tutorsList" style="display:grid;gap:8px"></div>
+        </div>
+
+        <div style="flex:1;min-width:300px;">
+          <h4>Tutor Login (web)</h4>
+          <form id="tutorLoginForm">
+            <input id="tutorLoginEmail" placeholder="Tutor Email" type="email" required />
+            <input id="tutorLoginPassword" placeholder="Password" type="password" required />
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+              <button type="submit">Login</button>
+            </div>
+            <div id="tutorLoginMsg" class="muted" style="margin-top:6px;"></div>
+          </form>
+
+          <div id="tutorDashboardWrap" style="display:none;margin-top:12px;">
+            <h4>Dashboard — <span id="tutorNameLabel"></span></h4>
+            <div id="tutorLeadsWrap">
+              <p class="muted">Leads assigned to you will appear here. Use "Schedule" to set time and send Meet link.</p>
+              <table id="tutorLeadsTable" style="margin-top:8px;">
+                <thead><tr><th>Lead ID</th><th>Student</th><th>Subject</th><th>Topic</th><th>Time Slot</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
     <div id="toast" class="toast">Action complete</div>
   </div>
 
-  <div id="messageModal" class="modal"><div class="modal-content"><button class="close-btn" onclick="closeModal()">Close</button><h3>Request Details</h3><pre id="modalMessage"></pre></div></div>
+  <div id="messageModal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">Close</button>
+      <h3>Request Details</h3>
+      <div id="modalBody" style="margin-top:8px;"></div>
+    </div>
+  </div>
 
 <script>
-const TRIAL_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzAVUkLjhWtawdltWVkDXl24qkB3s_ReSpXipCqXj7aWSIs6fY8pE6Pp1dSYRiizse0/exec";
+/*
+  IMPORTANT:
+  - Replace the below TUTOR_SCRIPT_URL and LEAD_SCRIPT_URL with your Apps Script deployed web app URLs.
+  - The code uses TRIAL_SCRIPT_URL (existing) to fetch leads; for assigning and scheduling we use LEAD_SCRIPT_URL
+  - Server-side (Apps Script) must implement:
+      - GET TRIAL_SCRIPT_URL -> returns lead objects (you already have)
+      - GET CONTACT_SCRIPT_URL -> returns contact objects (you already have)
+      - POST/GET LEAD_SCRIPT_URL?action=assignLead&assignLead=<ID>&tutorEmail=<email> -> write Assigned Tutor Email column
+      - POST/GET LEAD_SCRIPT_URL?action=scheduleLead&leadId=...&meetLink=...&timeSlot=...&notes=... -> update lead and send email to student
+      - TUTOR_SCRIPT_URL?action=createTutor (POST) -> create tutor row in Tutors sheet
+      - TUTOR_SCRIPT_URL?action=getTutors (GET) -> returns tutors list
+      - TUTOR_SCRIPT_URL?action=auth (POST/GET) -> validate tutor login, return tutor info
+*/
+
+const TRIAL_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzAVUkLjhWtawdltWVkDXl24qkB3s_ReSpXipCqXj7aWSIs6fY8pE6Pp1dSYRiizse0/exec"; // existing leads endpoint (replace if different)
 const CONTACT_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwdFkEeaLhMnTcHevdBpuPTZ81X0wyovFfoLEtnPw-yJeVnCscfbOwuT90LRhFKpDPx/exec";
 const COURSE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbyz7BhLYel26C8yedQd1HexC2SPbVfDyzAH14uZ3ljlM9uC5UElEVla8m91iB7N0oQU/exec";
+const TUTOR_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxl8Lk1F-aNBqAMifSjIsXK76I6sLC2LMpGBxp07FH7eU5J1JnGdMbqJjZIjqmOak5i/exec"; // implement create/get/auth
+const LEAD_SCRIPT_URL=TRIAL_SCRIPT_URL; // reuse existing lead endpoint for assign & schedule actions
+
 const ADMIN_PASSWORD="Admin@123";
 
-let trialRequests=[],contactRequests=[],filteredRequests=[],currentSection='trial';
+let trialRequests=[],contactRequests=[],filteredRequests=[],tutorsList=[],currentSection='trial';
+let loggedInTutor=null;
 
 (function authenticate(){
   const pass=sessionStorage.getItem("adminAuth")||prompt("Enter admin password:");
@@ -170,7 +253,7 @@ let trialRequests=[],contactRequests=[],filteredRequests=[],currentSection='tria
 })();
 function logout(){sessionStorage.removeItem("adminAuth");location.href="index.html";}
 
-function init(){bindSidebar();bindSubtabs();bindSearch();bindCourseForm();loadTrialRequests();loadContactRequests();loadCoursesPreview();}
+function init(){bindSidebar();bindSubtabs();bindSearch();bindCourseForm();loadTrialRequests();loadContactRequests();loadCoursesPreview();loadTutors();bindTutorForm();bindTutorLogin();}
 
 /* Sidebar */
 function bindSidebar(){
@@ -178,8 +261,8 @@ function bindSidebar(){
     t.addEventListener('click',()=>{
       document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      const tab=t.dataset.tab;switchSection(tab);
-      // deactivate all subtabs when main tab switched
+      const tab=t.dataset.tab||t.textContent.trim().toLowerCase();
+      switchSection(tab);
       document.querySelectorAll('.subtab').forEach(x=>x.classList.remove('active'));
     });
   });
@@ -191,6 +274,7 @@ function switchSection(section){
   document.getElementById('trialSection').style.display=(section==='trial')?'block':'none';
   document.getElementById('contactSection').style.display=(section==='contact')?'block':'none';
   document.getElementById('coursesSection').style.display=(section==='courses')?'block':'none';
+  document.getElementById('tutorsSection').style.display=(section==='tutors')?'block':'none';
   if (!filteredRequests.length) filteredRequests = [];
   displayActiveRequests();
 }
@@ -200,16 +284,15 @@ function bindSubtabs(){
   document.querySelectorAll('.subtab').forEach(s=>{
     s.addEventListener('click',()=>{
       const parent=s.dataset.parent;
-      // Only deactivate subtabs of same parent
       document.querySelectorAll(`.subtab[data-parent="${parent}"]`).forEach(x=>x.classList.remove('active'));
       s.classList.add('active');
       const status=s.dataset.status;
       let dataset=parent==='contact'?contactRequests:trialRequests;
-filteredRequests = dataset.filter(r => {
-  const val = (r['Status'] || 'Pending').trim().toLowerCase();
-  const filter = status.trim().toLowerCase();
-  return val === filter;
-});
+      filteredRequests = dataset.filter(r => {
+        const val = (r['Status'] || 'Pending').trim().toLowerCase();
+        const filter = status.trim().toLowerCase();
+        return val === filter;
+      });
       switchSection(parent);
       displayActiveRequests();
     });
@@ -238,26 +321,201 @@ function displayActiveRequests(){
 }
 
 /* Load data */
-async function loadTrialRequests(){try{const r=await fetch(TRIAL_SCRIPT_URL);const d=await r.json();trialRequests=Array.isArray(d)?
-d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}):[];displayTrialRequests(trialRequests);}catch(e){console.error(e);}}
+async function loadTrialRequests(){try{const r=await fetch(TRIAL_SCRIPT_URL);const d=await r.json();trialRequests=Array.isArray(d)? d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}):[];displayTrialRequests(trialRequests);}catch(e){console.error(e);}}
 
 async function loadContactRequests(){try{const r=await fetch(CONTACT_SCRIPT_URL);const d=await r.json();contactRequests=Array.isArray(d)?d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}):[];displayContactRequests(contactRequests);}catch(e){console.error(e);}}
 
-/* Display tables */
-function displayTrialRequests(list){const tb=document.querySelector('#trialTable tbody');tb.innerHTML='';(list||[]).slice().reverse().forEach(r=>{const id=r['Request ID']||'',st=r['Student Name']||'-',pa=r['Parent Name']||'-',m=r['Mobile']||'-',cl=r['Class']||'-',su=r['Subject']||'-',ts=r['Timestamp']||'',status=r['Status']||'Pending',css=getStatusClass(status);const tr=document.createElement('tr');tr.innerHTML=`<td>${id}</td><td>${st}</td><td>${pa}</td><td>${m}</td><td>${cl}</td><td>${su}</td><td><button class="view-btn">View</button></td><td><select class="status ${css}"><option ${status==="Pending"?"selected":""}>Pending</option><option ${status==="In Progress"?"selected":""}>In Progress</option><option ${status==="Replied"?"selected":""}>Replied</option><option ${status==="Completed"?"selected":""}>Completed</option></select></td><td>${ts}</td>`;tb.appendChild(tr);tr.querySelector('.view-btn').addEventListener('click',()=>openRequestModal(r,'trial'));const sel=tr.querySelector('select');sel.dataset.old=status;sel.addEventListener('change',()=>handleStatusChange(id,sel,TRIAL_SCRIPT_URL));});}
+/* Load tutors */
+async function loadTutors(){
+  try{
+    // fetch tutors list from TUTOR_SCRIPT_URL?action=getTutors
+    const r = await fetch(`${TUTOR_SCRIPT_URL}?action=getTutors`);
+    const d = await r.json();
+    tutorsList = Array.isArray(d)? d.map(o=>{const x={}; for(let k in o) x[k.trim()]=o[k]; return x; }) : [];
+    renderTutorsList();
+    // refresh assign dropdowns (if modal present)
+  }catch(e){console.warn("Could not load tutors:", e); tutorsList=[]; renderTutorsList();}
+}
 
-function displayContactRequests(list){const tb=document.querySelector('#contactTable tbody');tb.innerHTML='';(list||[]).slice().reverse().forEach(r=>{const id=r['Request ID']||'',ro=r['Role']||'',na=r['Name']||'-',em=r['Email']||'-',mo=r['Mobile']||'-',ci=r['City & State']||'',ts=r['Timestamp']||'',status=r['Status']||'Pending',css=getStatusClass(status);const tr=document.createElement('tr');tr.innerHTML=`<td>${id}</td><td>${ro}</td><td>${na}</td><td>${em}</td><td>${mo}</td><td>${ci}</td><td><button class="view-btn">View</button></td><td><select class="status ${css}"><option ${status==="Pending"?"selected":""}>Pending</option><option ${status==="In Progress"?"selected":""}>In Progress</option><option ${status==="Replied"?"selected":""}>Replied</option><option ${status==="Completed"?"selected":""}>Completed</option></select></td><td>${ts}</td>`;tb.appendChild(tr);tr.querySelector('.view-btn').addEventListener('click',()=>openRequestModal(r,'contact'));const sel=tr.querySelector('select');sel.dataset.old=status;sel.addEventListener('change',()=>handleStatusChange(id,sel,CONTACT_SCRIPT_URL));});}
+/* Display tables */
+function displayTrialRequests(list){
+  const tb=document.querySelector('#trialTable tbody');tb.innerHTML='';
+  (list||[]).slice().reverse().forEach(r=>{
+    const id=r['Request ID']||'',
+          st=r['Student Name']||'-',
+          pa=r['Parent Name']||'-',
+          m=r['Mobile']||'-',
+          cl=r['Class']||'-',
+          su=r['Subject']||'-',
+          assigned=r['Assigned Tutor Email']||'',
+          ts=r['Timestamp']||'',
+          status=r['Status']||'Pending',
+          css=getStatusClass(status);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${id}</td>
+      <td>${st}</td>
+      <td>${pa}</td>
+      <td>${m}</td>
+      <td>${cl}</td>
+      <td>${su}</td>
+      <td>${assigned?escapeHtml(assigned):'<em class="muted">Not assigned</em>'}</td>
+      <td><button class="view-btn">View</button></td>
+      <td>
+        <select class="status ${css}">
+          <option ${status==="Pending"?"selected":""}>Pending</option>
+          <option ${status==="In Progress"?"selected":""}>In Progress</option>
+          <option ${status==="Replied"?"selected":""}>Replied</option>
+          <option ${status==="Completed"?"selected":""}>Completed</option>
+        </select>
+      </td>
+      <td>${ts}</td>
+    `;
+    tb.appendChild(tr);
+    tr.querySelector('.view-btn').addEventListener('click',()=>openRequestModal(r,'trial'));
+    const sel=tr.querySelector('select');
+    sel.dataset.old=status;
+    sel.addEventListener('change',()=>handleStatusChange(id,sel,TRIAL_SCRIPT_URL));
+  });
+}
+
+function displayContactRequests(list){
+  const tb=document.querySelector('#contactTable tbody');tb.innerHTML='';
+  (list||[]).slice().reverse().forEach(r=>{
+    const id=r['Request ID']||'',ro=r['Role']||'',na=r['Name']||'-',em=r['Email']||'-',mo=r['Mobile']||'-',ci=r['City & State']||'',ts=r['Timestamp']||'',status=r['Status']||'Pending',css=getStatusClass(status);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${id}</td><td>${ro}</td><td>${na}</td><td>${em}</td><td>${mo}</td><td>${ci}</td><td><button class="view-btn">View</button></td><td><select class="status ${css}"><option ${status==="Pending"?"selected":""}>Pending</option><option ${status==="In Progress"?"selected":""}>In Progress</option><option ${status==="Replied"?"selected":""}>Replied</option><option ${status==="Completed"?"selected":""}>Completed</option></select></td><td>${ts}</td>`;
+    tb.appendChild(tr);
+    tr.querySelector('.view-btn').addEventListener('click',()=>openRequestModal(r,'contact'));
+    const sel=tr.querySelector('select');sel.dataset.old=status;sel.addEventListener('change',()=>handleStatusChange(id,sel,CONTACT_SCRIPT_URL));
+  });
+}
 
 /* Status classes */
 function getStatusClass(s){if(s==="Pending")return'status-pending';if(s==="In Progress")return'status-inprogress';if(s==="Completed")return'status-completed';if(s==="Replied")return'status-replied';return'';}
 
 /* Modal */
-function openRequestModal(r,t){let lines=[];for(let k in r){lines.push(k+": "+r[k]);}document.getElementById('modalMessage').innerText=lines.join('\n');document.getElementById('messageModal').style.display='flex';}
+function openRequestModal(r,t){
+  const body=document.getElementById('modalBody');
+  body.innerHTML='';
+  // Show key fields
+  const container=document.createElement('div');
+  container.style.display='grid';
+  container.style.gridTemplateColumns='1fr';
+  container.style.gap='8px';
+
+  // details
+  const pre=document.createElement('pre');
+  let lines=[];
+  for(let k in r) lines.push(`${k}: ${r[k]}`);
+  pre.innerText = lines.join('\n');
+  container.appendChild(pre);
+
+  if(t==='trial'){
+    // Assign tutor block (admin)
+    const assignWrap=document.createElement('div');
+    assignWrap.innerHTML=`<label style="font-weight:600">Assign Tutor</label>`;
+    const sel=document.createElement('select');
+    sel.style.width='100%';
+    sel.style.padding='8px';
+    sel.style.border='1px solid #d1d5db';
+    sel.style.borderRadius='6px';
+    const defaultOpt=document.createElement('option'); defaultOpt.value=''; defaultOpt.innerText='-- Select Tutor --';
+    sel.appendChild(defaultOpt);
+    tutorsList.forEach(tut=>{
+      const o=document.createElement('option'); o.value=tut['Email']||tut['Tutor Email']||''; o.innerText=`${tut['Name']||tut['Tutor Name']||o.value} (${tut['Email']||''})`;
+      sel.appendChild(o);
+    });
+    if(r['Assigned Tutor Email']) sel.value=r['Assigned Tutor Email'];
+    assignWrap.appendChild(sel);
+
+    const assignBtn=document.createElement('button');
+    assignBtn.textContent='Save Assignment';
+    assignBtn.style.marginTop='6px';
+    assignBtn.className='view-btn';
+    assignBtn.addEventListener('click',()=>assignTutorToLead(r['Request ID'], sel.value));
+    container.appendChild(assignWrap);
+    container.appendChild(assignBtn);
+  }
+
+  // If admin wants to schedule for student right away (quick schedule)
+  const scheduleQuick = document.createElement('div');
+  scheduleQuick.style.marginTop='10px';
+  scheduleQuick.innerHTML = `
+    <h4>Quick Schedule & Send Email</h4>
+    <div style="display:grid;gap:6px">
+      <input id="modal_meet_${r['Request ID']}" placeholder="Google Meet Link (https://...)" />
+      <input id="modal_time_${r['Request ID']}" placeholder="Time Slot (e.g. 2025-11-12 16:00 IST)" />
+      <textarea id="modal_notes_${r['Request ID']}" rows="2" placeholder="Notes (optional)"></textarea>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="modal_schedule_btn_${r['Request ID']}" class="view-btn">Schedule & Send Email</button>
+      </div>
+    </div>
+  `;
+  container.appendChild(scheduleQuick);
+  setTimeout(()=>{
+    const btn=document.getElementById(`modal_schedule_btn_${r['Request ID']}`);
+    if(btn) btn.addEventListener('click', async ()=>{
+      const meet=document.getElementById(`modal_meet_${r['Request ID']}`).value.trim();
+      const timeslot=document.getElementById(`modal_time_${r['Request ID']}`).value.trim();
+      const notes=document.getElementById(`modal_notes_${r['Request ID']}`).value.trim();
+      if(!meet){ alert('Please provide Google Meet link'); return; }
+      await scheduleLeadFromAdmin(r['Request ID'], meet, timeslot, notes, r['Student Email'] || r['Email']);
+    });
+  },50);
+
+  body.appendChild(container);
+  document.getElementById('messageModal').style.display='flex';
+}
 function closeModal(){document.getElementById('messageModal').style.display='none';}
 
 /* Status change */
-async function handleStatusChange(id,sel,url){const old=sel.dataset.old||sel.value;const val=sel.value;const remark=prompt(`Enter remark for "${val}" status:`);if(!remark){sel.value=old;return;}sel.className='status '+getStatusClass(val);try{const r=await fetch(`${url}?update=${encodeURIComponent(id)}&status=${encodeURIComponent(val)}&remark=${encodeURIComponent(remark)}`);if(r.ok){showToast("✅ Updated");updateLocalRecordStatus(id,val,remark);}else{sel.value=old;showToast("❌ Error");}}catch(e){sel.value=old;showToast("❌ Error");}}
+async function handleStatusChange(id,sel,url){
+  const old=sel.dataset.old||sel.value;
+  const val=sel.value;
+  const remark=prompt(`Enter remark for "${val}" status:`);
+  if(!remark){sel.value=old;return;}
+  sel.className='status '+getStatusClass(val);
+  try{
+    const r=await fetch(`${url}?update=${encodeURIComponent(id)}&status=${encodeURIComponent(val)}&remark=${encodeURIComponent(remark)}`);
+    if(r.ok){showToast("✅ Updated");updateLocalRecordStatus(id,val,remark);}else{sel.value=old;showToast("❌ Error");}
+  }catch(e){sel.value=old;showToast("❌ Error");}
+}
 function updateLocalRecordStatus(id,s,rem){[trialRequests,contactRequests].forEach(a=>a.forEach(r=>{if((r['Request ID']||'')==id){r['Status']=s;r['Admin Remark']=rem;}}));displayActiveRequests();}
+
+/* Assign tutor to lead (admin) */
+async function assignTutorToLead(leadId,tutorEmail){
+  if(!tutorEmail){alert('Select a tutor'); return;}
+  try{
+    const resp = await fetch(`${LEAD_SCRIPT_URL}?action=assignLead&assignLead=${encodeURIComponent(leadId)}&tutorEmail=${encodeURIComponent(tutorEmail)}`);
+    const j = await resp.json().catch(()=>({}));
+    if(resp.ok){
+      showToast('✅ Assigned');
+      // update local copy
+      trialRequests.forEach(r=>{ if((r['Request ID']||'')==leadId) r['Assigned Tutor Email']=tutorEmail; });
+      displayActiveRequests();
+      closeModal();
+    } else showToast('❌ Assign failed');
+  }catch(e){console.error(e); showToast('❌ Assign error');}
+}
+
+/* Quick schedule from admin modal (also sends email) */
+async function scheduleLeadFromAdmin(leadId, meetLink, timeSlot, notes, studentEmail){
+  try{
+    const url = `${LEAD_SCRIPT_URL}?action=scheduleLead&leadId=${encodeURIComponent(leadId)}&meetLink=${encodeURIComponent(meetLink)}&timeSlot=${encodeURIComponent(timeSlot)}&notes=${encodeURIComponent(notes)}&studentEmail=${encodeURIComponent(studentEmail)}`;
+    const r = await fetch(url);
+    const j = await r.json().catch(()=>({}));
+    if(r.ok){
+      showToast('✅ Scheduled & Emailed');
+      // update local lead
+      trialRequests.forEach(l=>{ if((l['Request ID']||'')==leadId){ l['Status']='Scheduled'; l['Google Meet Link']=meetLink; l['Time Slot']=timeSlot; l['Notes']=notes; }});
+      displayActiveRequests();
+      closeModal();
+    } else {
+      showToast('❌ Schedule failed');
+    }
+  }catch(e){console.error(e); showToast('❌ Error scheduling');}
+}
 
 /* Toast */
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
@@ -265,7 +523,144 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 /* Courses */
 async function loadCoursesPreview(){try{const r=await fetch(COURSE_SCRIPT_URL);const d=await r.json();const list=Array.isArray(d)?d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}):[];renderCoursesPreview(list);}catch(e){console.error(e);}}
 function renderCoursesPreview(l){const box=document.getElementById('coursesPreview');box.innerHTML='';l.slice().reverse().forEach(c=>{const card=document.createElement('div');card.style.background='#fff';card.style.padding='10px';card.style.borderRadius='8px';card.style.boxShadow='0 1px 4px rgba(0,0,0,0.06)';card.innerHTML=`<strong style="color:#2a3d66">${c.Title||'-'}</strong><div style="font-size:0.85rem;color:#444;margin-top:6px">${c.Class||'-'} • ${c.Subject||'-'}</div><div style="margin-top:8px"><a href="${c.PDF_URL||'#'}" target="_blank" style="color:#007bff">Open PDF</a></div>`;box.appendChild(card);});}
-function bindCourseForm(){const f=document.getElementById('courseForm'),m=document.getElementById('courseMsg');f.addEventListener('submit',async e=>{e.preventDefault();m.textContent='';const fd=new FormData(f);try{const r=await fetch(COURSE_SCRIPT_URL,{method:'POST',body:fd});const j=await r.json().catch(()=>({}));if(r.ok&&(j.result==="success"||j.result===undefined)){m.style.color='green';m.textContent='✅ Course added.';f.reset();setTimeout(loadCoursesPreview,900);}else{m.style.color='red';m.textContent='❌ Error adding course.';}}catch(e){m.style.color='red';m.textContent='❌ Error adding course.';}});}
+function bindCourseForm(){const f=document.getElementById('courseForm'),m=document.getElementById('courseMsg');f.addEventListener('submit',async e=>{e.preventDefault();m.textContent='';const fd=new FormData(f);try{const r=await fetch(COURSE_SCRIPT_URL,{method:'POST',body:fd});const j=await r.json().catch(()=>({}));if(r.ok&&(j.result==="success"||j.result===undefined)){m.style.color='green';m.textContent='✅ Course added.';f.reset();setTimeout(loadCoursesPreview,900);}else{m.style.color='red';m.textContent='❌ Error adding course.';}}catch(err){console.error(err);m.style.color='red';m.textContent='❌ Error submitting course.';}});}
+
+/* Tutor admin form */
+function bindTutorForm(){
+  const f=document.getElementById('tutorForm'),m=document.getElementById('tutorMsg');
+  f.addEventListener('submit', async (e)=>{
+    e.preventDefault(); m.textContent=''; const fd=new FormData(f);
+    const payload = {
+      action: 'createTutor',
+      Name: fd.get('Name'),
+      Email: fd.get('Email'),
+      Password: fd.get('Password'),
+      Subjects: fd.get('Subjects') || ''
+    };
+    try{
+      const resp = await fetch(TUTOR_SCRIPT_URL, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      const j = await resp.json().catch(()=>({}));
+      if(resp.ok){
+        m.style.color='green'; m.textContent='✅ Tutor created.';
+        f.reset(); setTimeout(loadTutors,800);
+      } else {
+        m.style.color='red'; m.textContent='❌ Error creating tutor.';
+      }
+    }catch(err){console.error(err); m.style.color='red'; m.textContent='❌ Error creating tutor.';}
+  });
+}
+
+/* Render tutors list (admin) */
+function renderTutorsList(){
+  const wrap=document.getElementById('tutorsList'); wrap.innerHTML='';
+  if(!tutorsList.length){ wrap.innerHTML='<div class="muted">No tutors registered yet.</div>'; return; }
+  tutorsList.forEach(t=>{
+    const div=document.createElement('div'); div.style.background='#fff'; div.style.padding='8px'; div.style.borderRadius='8px'; div.style.display='flex'; div.style.justifyContent='space-between'; div.style.alignItems='center';
+    div.innerHTML = `<div><strong>${t['Name']||t['Tutor Name']||t['Name']}</strong><div class="muted" style="font-size:0.9rem">${t['Email']||t['Tutor Email']||''} ${t['Subjects']?(' • '+t['Subjects']):''}</div></div><div style="display:flex;gap:8px"><button class="view-btn" data-email="${t['Email']||t['Tutor Email']||''}">Message</button></div>`;
+    wrap.appendChild(div);
+  });
+}
+
+/* Tutor login & dashboard */
+function bindTutorLogin(){
+  const f=document.getElementById('tutorLoginForm'), msg=document.getElementById('tutorLoginMsg');
+  f.addEventListener('submit', async (e)=>{
+    e.preventDefault(); msg.textContent=''; const email=document.getElementById('tutorLoginEmail').value.trim(); const password=document.getElementById('tutorLoginPassword').value.trim();
+    if(!email||!password){ msg.textContent='Enter credentials'; return; }
+    try{
+      // authenticate
+      const resp = await fetch(`${TUTOR_SCRIPT_URL}?action=auth&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      const j = await resp.json().catch(()=>({}));
+      if(resp.ok && j && j.email){
+        loggedInTutor = j;
+        sessionStorage.setItem('tutorAuth', JSON.stringify(j));
+        showTutorDashboard();
+        msg.textContent='';
+      } else {
+        msg.textContent='Invalid credentials';
+      }
+    }catch(err){ console.error(err); msg.textContent='Error authenticating'; }
+  });
+
+  // auto-login if session exists
+  const s=sessionStorage.getItem('tutorAuth');
+  if(s){ try{ loggedInTutor=JSON.parse(s); showTutorDashboard(); }catch(e){ console.warn('no tutor session'); } }
+}
+
+async function showTutorDashboard(){
+  if(!loggedInTutor) return;
+  document.getElementById('tutorNameLabel').innerText = loggedInTutor.Name || loggedInTutor.name || loggedInTutor.Email || loggedInTutor.email;
+  document.getElementById('tutorDashboardWrap').style.display='block';
+  // load leads from LEAD_SCRIPT_URL and filter by Assigned Tutor Email
+  try{
+    const r = await fetch(LEAD_SCRIPT_URL);
+    const d = await r.json();
+    const leads = Array.isArray(d)? d.map(o=>{const x={};for(let k in o)x[k.trim()]=o[k];return x;}) : [];
+    const myLeads = leads.filter(l => (l['Assigned Tutor Email']||'').toLowerCase() === (loggedInTutor.Email||loggedInTutor.email||'').toLowerCase());
+    renderTutorLeads(myLeads);
+  }catch(e){ console.error(e); showToast('❌ Error loading leads'); }
+}
+
+function renderTutorLeads(list){
+  const tb=document.querySelector('#tutorLeadsTable tbody'); tb.innerHTML='';
+  (list||[]).forEach(r=>{
+    const id=r['Request ID']||'', student=r['Student Name']||r['Name']||r['Email']||'-', subject=r['Subject']||'-', topic=r['Topic']||r['Topic Name']||'-', time=r['Time Slot']||'-';
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td>${id}</td><td>${escapeHtml(student)}</td><td>${escapeHtml(subject)}</td><td>${escapeHtml(topic)}</td><td>${escapeHtml(time)}</td><td><button class="view-btn">Schedule</button></td>`;
+    tb.appendChild(tr);
+    tr.querySelector('.view-btn').addEventListener('click', ()=>openTutorScheduleModal(r));
+  });
+}
+
+/* Tutor schedule modal */
+function openTutorScheduleModal(lead){
+  const body=document.getElementById('modalBody');
+  body.innerHTML='';
+  const container=document.createElement('div');
+  container.style.display='grid'; container.style.gap='8px';
+  container.innerHTML = `
+    <h3>Schedule for Lead: ${lead['Request ID'] || ''}</h3>
+    <div><strong>Student:</strong> ${escapeHtml(lead['Student Name'] || lead['Name'] || lead['Email'] || '')}</div>
+    <div><strong>Class:</strong> ${escapeHtml(lead['Class']||'')}</div>
+    <div><strong>Subject:</strong> ${escapeHtml(lead['Subject']||'')}</div>
+    <div style="margin-top:8px"><input id="sched_meet" placeholder="Google Meet Link (https://...)" /></div>
+    <div><input id="sched_time" placeholder="Time Slot (e.g. 2025-11-12 16:00 IST)" /></div>
+    <div><textarea id="sched_notes" rows="3" placeholder="Notes (optional)"></textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="sched_save" class="view-btn">Save & Send Email</button>
+    </div>
+  `;
+  body.appendChild(container);
+  document.getElementById('messageModal').style.display='flex';
+  setTimeout(()=>{
+    document.getElementById('sched_save').addEventListener('click', async ()=>{
+      const meet=document.getElementById('sched_meet').value.trim();
+      const timeslot=document.getElementById('sched_time').value.trim();
+      const notes=document.getElementById('sched_notes').value.trim();
+      if(!meet){ alert('Provide Google Meet link'); return; }
+      // call schedule action on server
+      try{
+        const url = `${LEAD_SCRIPT_URL}?action=scheduleLead&leadId=${encodeURIComponent(lead['Request ID'])}&meetLink=${encodeURIComponent(meet)}&timeSlot=${encodeURIComponent(timeslot)}&notes=${encodeURIComponent(notes)}&tutorEmail=${encodeURIComponent(loggedInTutor.Email||loggedInTutor.email||'')}`;
+        const r = await fetch(url);
+        if(r.ok){
+          showToast('✅ Scheduled & emailed student');
+          // refresh tutor dashboard
+          closeModal();
+          showTutorDashboard();
+        } else {
+          showToast('❌ Schedule failed');
+        }
+      }catch(e){ console.error(e); showToast('❌ Error scheduling'); }
+    });
+  },40);
+}
+
+/* Utility */
+function escapeHtml(s){ if(!s && s!==0) return ''; return String(s).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+
+/* Small safeguard: ensure course script function bound */
+document.addEventListener('DOMContentLoaded', ()=>{ if(!window.bindCourseForm) bindCourseForm(); });
+
 </script>
 </body>
 </html>

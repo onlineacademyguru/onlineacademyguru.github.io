@@ -1,100 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact | Online Academy Guru</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | Online Academy Guru</title>
 
-  <style>
-    .contact-info {
-      background: #f9fafc;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    }
+<style>
+:root{
+  --blue:#1e3a8a;
+  --blue-dark:#152c63;
+  --accent:#ffd500;
+  --light-bg:#f2f6ff;
+  --white:#ffffff;
+  --muted:#6b7280;
+  --radius:14px;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  --shadow-soft:0 4px 12px rgba(0,0,0,.06);
+  --container:1200px;
+}
 
-    .contact-info p {
-      margin: 2px 0;
-      font-size: 1rem;
-      color: #333;
-    }
+nav a.active{
+  background:rgba(255,255,255,0.12);
+}
 
-    .form-container {
-      max-width: 700px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      padding: 15px;
-      position: relative;
-    }
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color:#111827;
+  background:#fff;
+}
+.container{
+  max-width:var(--container);
+  margin:auto;
+  padding:0 16px;
+}
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+/* ---------- Header ---------- */
+header{
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+  color:#fff;
+}
+.header-content{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 0;
+}
+.logo{margin:0;font-size:1.4rem}
+.tagline{font-size:.85rem;opacity:.9}
+nav a{
+  color:#fff;
+  margin-left:18px;
+  text-decoration:none;
+  font-weight:500;
+}
 
-    input, textarea, select {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      width: 100%;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
+/* ---------- Hero ---------- */
+.page-hero{
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+  color:#fff;
+  padding:40px 0;
+  text-align:center;
+}
+.page-hero h1{
+  margin:0 0 4px;
+  font-size:2.2rem;
+}
+.page-hero p{
+  margin:0;
+  opacity:.9;
+}
 
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: #2a3d66;
-      box-shadow: 0 0 5px rgba(42, 61, 102, 0.5);
-    }
+/* ---------- Layout ---------- */
+.contact-wrapper{
+  display:grid;
+  grid-template-columns:1fr 1.2fr;
+  gap:10px;
+  margin:5px auto;
+}
 
-    button {
-      background: #2a3d66;
+/* ---------- Info Card ---------- */
+.contact-card{
+  background:var(--light-bg);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow-soft);
+}
+.contact-card h3{
+  margin-top:0;
+  color:var(--blue-dark);
+}
+.contact-card p{
+  margin:10px 0;
+  color:#374151;
+}
+
+/* ---------- Form Card ---------- */
+.form-card{
+  background:#fff;
+  border-radius:var(--radius);
+  padding:22px;
+  box-shadow:var(--shadow);
+}
+.form-card h3{
+  margin-top:0;
+  color:var(--blue-dark);
+}
+
+/* ---------- Form ---------- */
+form{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+form label{
+  display:none;
+}
+input,select,textarea{
+  grid-column:span 2;
+  padding:9px 12px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-size:.9rem;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(30,58,138,.15);
+}
+textarea{
+  min-height:80px;
+  resize:none;
+}
+/* ---------- Button ---------- */
+button{
+      background: #1e3a8a;
       color: white;
+      padding: 14px;
       border: none;
-      padding: 12px;
       border-radius: 8px;
       font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s ease;
-    }
+      transition: 0.3s;
+}
 
-    button:hover {
-      background: #1e2d50;
-    }
+button:hover{
+  transform:none;
+  background: #152c70;
+  box-shadow:none;
+  opacity:.95;
+}
 
-    .thankyou-message {
-      display: none;
-      text-align: center;
-      padding: 30px;
-      background: #f5f8ff;
-      border: 1px solid #cbd5e0;
-      border-radius: 12px;
-      margin-top: 15px;
-      animation: fadeIn 0.5s ease-in-out;
-    }
+/* ---------- Thank You ---------- */
+.thankyou-message{
+  display:none;
+  text-align:center;
+  padding:40px;
+  background:var(--light-bg);
+  border-radius:var(--radius);
+}
+.thankyou-message h3{
+  color:var(--blue-dark);
+}
 
-    .thankyou-message h3 {
-      color: #2a3d66;
-      margin-bottom: 10px;
-    }
+/* ---------- Footer ---------- */
+footer{
+  background:linear-gradient(90deg,#163f7f,#08306b);
+  color:#fff;
+  padding:26px 18px;
+  margin-top:40px;
+  text-align:center;
+  box-shadow:0 -8px 30px rgba(8,48,107,.12);
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 768px) {
-      .form-container {
-        padding: 12px;
-      }
-    }
-  </style>
+/* ---------- Responsive ---------- */
+@media(max-width:900px){
+  .contact-wrapper{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
 
 <body>
@@ -104,9 +192,9 @@
     <p class="tagline">Empowering Students with Expert-Led Learning.</p>
     <nav>
       <a href="index.html">Home</a>
-      <a href="about.html">About</a>
+<a href="#" class="active">Contact</a>
+      <a href="become-tutor.html">Become a Tutor</a>
       <a href="courses.html">Courses</a>
-      <a href="contact.html" class="active">Contact Us</a>
       <a href="admin.html">Login</a>
     </nav>
   </div>
@@ -120,14 +208,17 @@
     <p>📍 Sector 62, Noida</p>
     <p>📞 9871003445</p>
     <p>📧 onlineacademyguru@gmail.com</p>
-    <p>If you have questions or want to enroll, please reach out to us.</p>
+   
+<p>For enrollment, partnerships, or queries — we’re just a message away.<p>
+
+<p>If you have questions or want to enroll, please reach out to us.</p>
   </div>
 
   <div class="form-container">
     <form id="contactForm">
       <label for="Role">I am a:</label>
       <select id="Role" name="role" required>
-        <option value="">Select</option>
+        <option value="">You are </option>
         <option value="Educator">Educator</option>
         <option value="Student">Student</option>
         <option value="Parent/Guardian">Parent/Guardian</option>
@@ -164,16 +255,16 @@
       </select>
 
       <label>Your Name</label>
-      <input type="text" name="name" placeholder="Enter your name" required>
+      <input type="text" name="name" placeholder="Enter your Name" required>
 
       <label>Email Address</label>
-      <input type="email" name="email" placeholder="Enter your email" required>
+      <input type="email" name="email" placeholder="Enter your Email" required>
 
       <label>Mobile Number</label>
-      <input type="tel" name="mobile" placeholder="Enter your mobile number" required pattern="[0-9]{10}">
+      <input type="tel" name="mobile" placeholder="Enter your Mobile number" required pattern="[0-9]{10}">
 
       <label>City & State</label>
-      <input type="text" name="citystate" placeholder="Enter your city and state" required>
+      <input type="text" name="citystate" placeholder="Enter your City and state" required>
 
       <label>Message</label>
       <textarea name="message" rows="3" placeholder="Write your message here..." required></textarea>

@@ -1,236 +1,682 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Online Academy Guru</title>
-  <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="favicon.ico" />
   <style>
-    /* AI Search Section */
-    .ai-search {
-      text-align: center;
-      padding: 30px 15px;
-      background: #fff;
-      margin-top: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    /* ---------- Global ---------- */
+    :root{
+      --nav-blue:#09306b;
+      --hero-blue-start:#09406b;
+      --hero-blue-end:#1b42b6;
+      --accent:#ffd500;
+      --card-bg:#ffffff;
+      --muted:#6b7280;
+      --container:1200px;
+
+      --blue: #1e3a8a;
+      --blue-dark: #152c63;
+      --light-bg: #f2f6ff;
+      --white: #ffffff;
+      --radius: 12px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
-    .ai-search h3 {
-      color: #2a3d66;
-      margin-bottom: 12px;
-      font-size: 1.3rem;
+nav a.active{
+  background:rgba(255,255,255,0.12);
+}
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+      color:#0f1724;
+      background:#f5f7ff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
     }
-    #aiForm {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+    .container{max-width:var(--container);margin:0 auto;padding:1px;}
+
+    /* ---------- HEADER (blue) ---------- */
+    header{
+      background:linear-gradient(90deg,var(--nav-blue), #163f7f);
+      color:#fff;
+      position:sticky;
+      top:0;
+      z-index:1200;
+      box-shadow:0 6px 18px rgba(8,48,107,0.16);
     }
-    #aiInput {
-      width: 70%;
-      max-width: 480px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
+    .header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--container);margin:0 auto;padding:12px;}
+    .brand {display:flex;align-items:center;gap:12px}
+    .logo {font-size:1.65rem;font-weight:700;letter-spacing:0.2px}
+    .tagline {font-size:0.8rem;opacity:0.95}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:rgba(255,255,255,0.95);text-decoration:none;font-weight:600;padding:8px;border-radius:8px}
+    nav a:hover{background:rgba(255,255,255,0.06)}
+    .cta-header{background:var(--accent);color:var(--nav-blue);padding:8px 12px;border-radius:8px;font-weight:700;text-decoration:none}
+
+    /* ---------- HERO (stunning blue) ---------- */
+    .hero{
+      background:linear-gradient(180deg,var(--hero-blue-start), var(--hero-blue-end));
+      color:#fff;
+      padding:76px 18px 46px;
+      position:relative;
+      overflow:hidden;
     }
-    #aiSend {
-      background: #2a3d66;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
+    .hero .container{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .hero-left{max-width:680px}
+    .hero h1{margin:0;font-size:2.4rem;letter-spacing:-0.4px}
+    .hero p{margin:12px 0 0;color:rgba(255,255,255,0.92);font-size:1.00rem;max-width:560px}
+    .hero .primary-cta{display:inline-block;margin-top:18px;background:var(--accent);color:var(--nav-blue);padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none}
+    .hero .secondary-cta{display:inline-block;margin-left:12px;margin-top:18px;background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.95);padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* floating formulas (subtle) */
+    .formula{
+      position:absolute;color:#fff;opacity:0.09;font-weight:800;pointer-events:none;
+      transform:translate3d(0,0,0);
+      font-family:serif;
+      text-shadow:0 2px 8px rgba(0,0,0,0.06);
     }
-    #aiSend:hover {
-      background: #1f2f54;
+    .f1{left:6%;top:6%;font-size:46px;}
+    .f2{right:6%;top:12%;font-size:42px;}
+    .f3{left:8%;bottom:8%;font-size:36px;}
+    .f4{right:10%;bottom:6%;font-size:40px;}
+    @keyframes bob { from{transform:translateY(0);} to{transform:translateY(-18px);} }
+    .formula{animation:bob 5s ease-in-out infinite alternate;}
+
+    /* hero right panel */
+    .hero-right{
+      min-width:280px;
+      max-width:420px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border-radius:14px;padding:18px;color:#fff;backdrop-filter: blur(6px);
+      box-shadow: 0 8px 26px rgba(11,41,90,0.18);
+    }
+    .hero-right h4{margin:0 0 8px;font-size:1.05rem}
+    .hero-right p{margin:0 0 10px;opacity:0.95;font-size:0.95rem}
+
+    /* ---------- MAIN (light) ---------- */
+    main{margin-top:20px;padding-bottom:30px}
+
+    /* Subjects grid (light cards) */
+    .subjects-wrap{max-width:var(--container);margin:8px auto 28px;padding:0 18px;}
+    .subjects-title{text-align:center;margin-bottom:18px}
+    .subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+    .subject {
+      background:var(--card-bg);padding:18px;border-radius:12px;text-align:center;box-shadow:0 8px 22px rgba(12,48,107,0.06);
+      transition:transform .22s, box-shadow .22s;
+    }
+    .subject:hover{transform:translateY(-6px);box-shadow:0 18px 36px rgba(12,48,107,0.09)}
+    .subject .icon{font-size:28px}
+    .subject .label{margin-top:10px;font-weight:700;color:#0f1724;font-size:0.95rem}
+
+    /* AI search panel (keeps functionality) */
+    .ai-search{
+      max-width:900px;margin:28px auto;padding:20px;border-radius:12px;background:#fff;box-shadow:0 6px 18px rgba(12,48,107,0.04)
+    }
+    .ai-search h3{margin:0 0 10px;color:var(--nav-blue)}
+    #aiForm{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+    #aiInput{flex:1;min-width:220px;padding:12px;border-radius:10px;border:1px solid #e6ecff}
+    #aiSend{background:var(--nav-blue);color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+
+    /* Features row */
+    .features{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+    .feature{background:#fff;padding:18px;border-radius:12px;min-width:240px;box-shadow:0 6px 22px rgba(12,48,107,0.04);text-align:center}
+    .feature h3{margin-top:0}
+
+    /* Courses preview */
+    .courses{max-width:var(--container);margin:26px auto;padding:0 18px}
+    .course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .course-card{background:#fff;padding:14px;border-radius:10px;box-shadow:0 8px 24px rgba(12,48,107,0.04)}
+    .course-card h4{margin:0 0 8px;color:var(--nav-blue)}
+
+    /* Tutors */
+    .tutors{max-width:var(--container);margin:36px auto;padding:0 18px}
+    .tutor-grid{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+    .tutor-card{background:#fff;padding:16px;border-radius:12px;width:240px;box-shadow:0 10px 28px rgba(12,48,107,0.04);text-align:center}
+    .tutor-card img{width:100%;border-radius:8px;height:140px;object-fit:cover}
+
+    /* Testimonials */
+    .testimonials{max-width:var(--container);margin:30px auto;padding:20px;text-align:center}
+    .testimonial{display:inline-block;background:#f7f9ff;padding:16px;border-radius:12px;margin:8px;box-shadow:0 6px 16px rgba(12,48,107,0.03);max-width:420px}
+
+    /* About */
+    .about-section{max-width:var(--container);margin:30px auto;padding:26px;background:#fff;border-radius:12px;box-shadow:0 12px 30px rgba(12,48,107,0.04)}
+    .values{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+    .value-card{background:#f6f8ff;padding:14px;border-radius:10px;text-align:center}
+    .founder{display:flex;gap:18px;align-items:center;margin-top:22px;flex-wrap:wrap}
+    .founder img{width:120px;height:120px;border-radius:80px;object-fit:cover;box-shadow:0 8px 20px rgba(12,48,107,0.06)}
+
+    /* Footer (blue) */
+footer{
+  background:linear-gradient(90deg,#163f7f,#08306b);
+  color:#fff;
+  padding:26px 18px;
+  margin-top:40px;
+  text-align:center;
+  box-shadow:0 -8px 30px rgba(8,48,107,.12);
+}
+    footer .footer-inner{max-width:var(--container);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    footer .links a{color:rgba(255,255,255,0.95);text-decoration:none;margin-right:12px;font-weight:600}
+    .muted{color:var(--muted)}
+
+    /* Responsive */
+    @media (max-width:880px){
+      .hero h1{font-size:1.7rem}
+      .hero-right{display:none}
+      .header-inner{flex-direction:column;align-items:flex-start;gap:8px}
+      .formula{display:none}
     }
 
-    /* Chat box */
-    #aiChat {
-      margin-top: 18px;
-      max-width: 720px;
-      margin-inline: auto;
-      background: #f9fafc;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 16px;
-      text-align: left;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      display: none;
+/* BOOKING BUTTON */
+    #bookTrialBtn {
+      background: var(--accent);
+      color: var(--blue-dark);
+      padding: 15px 20px;
+      font-weight: 800;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
     }
-    .msg {
+
+    /* SIDE SLIDE FORM HYBRID */
+    #trialFormContainer {
+      position: fixed;
+      bottom: 0;
+      right: -400px;
+      width: 360px;
+      height: 75%;
+      background: var(--light-bg);
+      padding: 0;
+      border-left: 1px solid #d0d7e4;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.25);
+      overflow-y: auto;
+      transition: 0.35s ease;
+      z-index: 2000;
+      border-radius: 14px 0 0 0;
+    }
+
+    #trialFormContainer.open {
+      right: 0;
+ color: var(--nav-blue);
+    }
+
+    .form-inner {
+      background: white;
+      padding: 20px;
+      border-radius: var(--radius);
+      margin: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    #closeFormBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    /* FORM FIELDS */
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: 1px solid #c4cce0;
       margin-bottom: 12px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      max-width: 85%;
-      word-wrap: break-word;
     }
-    .user {
-      background: #2a3d66;
-      color: #fff;
-      margin-left: auto;
-      border-bottom-right-radius: 4px;
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--blue);
+      color: white;
+      padding: 18px 12px;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 800;
+      cursor: pointer;
     }
-    .ai {
-      background: #e8ecf8;
-      color: #333;
-      margin-right: auto;
-      border-bottom-left-radius: 4px;
-    }
-    @keyframes blink {
-      0% { opacity: 0.2; }
-      50% { opacity: 1; }
-      100% { opacity: 0.2; }
-    }
-    .typing span {
-      animation: blink 1.2s infinite;
-    }
+
   </style>
 </head>
 <body>
-<header>
-  <div class="container header-content">
-    <h1 class="logo">🎓 Online Academy Guru</h1>
-    <p class="tagline">Empowering Students with Expert-Led Learning.</p>
-    <nav>
-      <a href="index.html" class="active">Home</a>
-      <a href="about.html">About</a>
-      <a href="courses.html">Courses</a>
-      <a href="contact.html">Contact Us</a>
-    </nav>
-  </div>
-</header>
 
-<section class="hero">
-  <div class="hero-content">
-    <h2>Learn, Grow, Succeed</h2>
-    <p>Your premier online learning platform connecting students with expert tutors for interactive, personalized learning.</p>
-    <a href="courses.html" class="btn">Explore Courses</a>
-  </div>
-</section>
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div>
+          <div class="logo">🎓 Online Academy Guru</div>
+          <div class="tagline">Empowering Students with Expert-Led Learning</div>
+        </div>
+      </div>
 
-<!-- ✅ AI Search placed BELOW hero -->
-<section class="ai-search">
-  <h3>🔍 Search with AI Tutor</h3>
-  <form id="aiForm">
-    <input id="aiInput" placeholder="Ask your question..." autocomplete="off" />
-    <button id="aiSend" type="submit">Search</button>
-  </form>
-  <div id="aiChat"></div>
-</section>
-
-<section class="features container">
-  <div class="feature">
-    <h3>👨‍🏫 Expert Tutors</h3>
-    <p>Learn from highly qualified tutors who care about your success.</p>
-  </div>
-  <div class="feature">
-    <h3>🧠 Personalized Learning</h3>
-    <p>Tailored learning plans designed for your strengths and goals.</p>
-  </div>
-  <div class="feature">
-    <h3>💻 Interactive Classes</h3>
-    <p>Live sessions, quizzes, and guided study for real results.</p>
-  </div>
-</section>
-
-<section class="tutors container">
-  <h2>Meet Our Tutors</h2>
-  <div class="tutor-grid">
-    <div class="tutor-card">
-      <img src="tutor1.jpg" alt="Tutor">
-      <h4>Mr. Vikas Kumar</h4>
-      <p>Founder, Online Academy Guru</p>
-      <p>Mathematics Expert</p>
+      <nav>
+	<a href="#" class="active">Home</a>
+        <a href="#subjects">Subjects</a>
+        <a href="#courses">Courses</a>
+        <a href="#about">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="become-tutor.html">Become a Tutor</a>
+        <a href="courses.html" class="cta-header">Explore Courses</a>
+        <a href="admin.html">Login</a>
+      </nav>
     </div>
-    <div class="tutor-card">
-      <img src="tutor2.jpg" alt="Tutor">
-      <h4>Ms. Ananya Roy</h4>
-      <p>Science Specialist</p>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="hero">
+    <div class="formula f1">E = mc²</div>
+    <div class="formula f2">a² + b² = c²</div>
+    <div class="formula f3">∫ x² dx</div>
+    <div class="formula f4">F = ma</div>
+
+    <div class="container" style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+      <div class="hero-left">
+        <h1>Learn. Grow. Succeed.</h1>
+        <p>Online Academy Guru brings expert tutors, personalized learning plans and modern tools to help students achieve academic & skill mastery — from fundamentals to competitive prep.</p>
+        <div style="margin-top:18px">
+          <a class="primary-cta hero-cta-btn" href="courses.html" style="background:var(--accent);color:var(--nav-blue);padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Explore Courses</a>
+          <a class="secondary-cta hero-cta-2" href="#about">Learn More</a>
+        </div>
+      </div>
+
+      <div class="hero-right" aria-hidden="true">
+        <h4>Start with a free trial</h4>
+        <p>Book a free demo class with our tutors- evaluate teaching style & curriculum before you decide.</p>
+        <p style="margin-top:2px"><strong>Fast booking:</strong> Choose date, time and subject. We'll confirm within 24 hours.</p>
+        <a href="contact.html" style="display:inline-block;margin-top:12px;background:#fff;color:var(--nav-blue);padding:7px 12px;border-radius:7px;font-weight:700;text-decoration:none">Enrol Now</a>
+        <button id="bookTrialBtn"style="display:inline-block;margin-top:12px;background:#fff;color:var(--nav-blue);padding:7px 12px;border-radius:7px;font-weight:850;text-decoration:none">Book a Free Trial</button>
+      </div>
     </div>
-    <div class="tutor-card">
-      <img src="tutor3.jpg" alt="Tutor">
-      <h4>Mr. Arjun Patel</h4>
-      <p>English Language Coach</p>
+
+<!-- HYBRID FORM PANEL -->
+  <div id="trialFormContainer">
+    <button id="closeFormBtn">X</button>
+
+    <div class="form-inner" id="formPage1">
+      <h3>Book Your Free Trial - Step 1</h3>
+      <form id="trialForm1">
+        <input name="studentName" placeholder="Student Name" required>
+        <input name="parentName" placeholder="Parent Name" required>
+        <input name="mobile" placeholder="Mobile No." required>
+        <select name="class" required>
+          <option value="">Select Class</option>
+          <option>Class 1</option>
+          <option>Class 2</option>
+          <option>Class 3</option>
+        </select>
+        <select name="subject" required>
+          <option value="">Select Subjects/Courses</option>
+          <option>Math</option>
+          <option>Science</option>
+          <option>English</option>
+        </select>
+        <input name="city" placeholder="City" required>
+        <button type="submit">Next</button>
+      </form>
+    </div>
+
+    <div class="form-inner" id="formPage2" style="display:none;">
+      <h3>Book Your Free Trial - Step 2</h3>
+      <form id="trialForm2">
+        <input type="hidden" name="studentName">
+        <input type="hidden" name="parentName">
+        <input type="hidden" name="mobile">
+        <input type="hidden" name="class">
+        <input type="hidden" name="subject">
+        <input type="hidden" name="city">
+
+        <select name="feeRange" required>
+          <option value="">Select Fee Range</option>
+          <option value="199-399">199-399</option>
+          <option value="399-599">399-599</option>
+          <option value="599-899">599-899</option>
+        </select>
+
+        <input type="date" name="preferredDate" required>
+
+        <select name="preferredTime" required>
+          <option value="">Select Time</option>
+          <option>10:00 AM</option>
+          <option>2:00 PM</option>
+          <option>5:00 PM</option>
+        </select>
+
+        <select name="language" required>
+          <option value="">Preferred Language</option>
+          <option>English</option>
+          <option>Hindi</option>
+        </select>
+
+        <input type="text" name="demoTopic" placeholder="Demo Topic">
+        <textarea name="additionalNote" placeholder="Additional Note (if any)"></textarea>
+
+        <label>
+          <input type="checkbox" name="terms" required>
+          I agree to the Terms and Conditions.
+        </label>
+
+        <button type="submit">Submit</button>
+      </form>
+
+      <div id="formSuccess" style="display:none;color:green;margin-top:10px;"></div>
     </div>
   </div>
-</section>
+  </section>
 
-<section class="testimonials container">
-  <h2>Student Testimonials</h2>
-  <div class="testimonial">
-    <p>"Online Academy Guru transformed my learning experience. The tutors are amazing!"</p>
-    <span>- Priya K.</span>
-  </div>
-  <div class="testimonial">
-    <p>"The personalized classes helped me improve my grades and confidence."</p>
-    <span>- Rohit S.</span>
-  </div>
-</section>
+  <!-- MAIN -->
+  <main>
 
-<footer>
-  <p>© 2025 Online Academy Guru. All rights reserved.</p>
-</footer>
+    <!-- SUBJECTS -->
+    <section id="subjects" class="subjects-wrap">
+      <div class="subjects-title container"><h2 style="margin:10px 0;text-align:center">Subjects & Skills</h2><p style="text-align:center;color:var(--muted);margin-top:6px">Academic subjects + modern skills blended for future-ready learning.</p></div>
 
-<!-- ✅ Updated AI Script -->
-<script>
-const PROXY = "https://corsproxy.io/?";
-const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoM_5nXg8GDn8nbVakePVEnMdrlaiRX0KTrPwCWTNckSuEDj7pGK9W8QXc1QjwWt9G/exec";
+      <div class="container subjects">
+        <div class="subject"><div class="icon">📐</div><div class="label">Mathematics</div></div>
+        <div class="subject"><div class="icon">🧪</div><div class="label">Chemistry</div></div>
+        <div class="subject"><div class="icon">⚛️</div><div class="label">Physics</div></div>
+        <div class="subject"><div class="icon">🧬</div><div class="label">Biology</div></div>
+        <div class="subject"><div class="icon">📘</div><div class="label">English</div></div>
+        <div class="subject"><div class="icon">🌍</div><div class="label">Social Studies</div></div>
+        <div class="subject"><div class="icon">💻</div><div class="label">Programming</div></div>
+        <div class="subject"><div class="icon">📊</div><div class="label">Business Studies</div></div>
+        <div class="subject"><div class="icon">🧾</div><div class="label">Accounts</div></div>
+        <div class="subject"><div class="icon">🎨</div><div class="label">Design</div></div>
+        <div class="subject"><div class="icon">🗣️</div><div class="label">Communication</div></div>
+        <div class="subject"><div class="icon">⏳</div><div class="label">Logical Reasoning</div></div>
+      </div>
+    </section>
 
-const res = await fetch(PROXY + APP_SCRIPT_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ prompt })
+    <!-- AI SEARCH -->
+    <section class="ai-search">
+      <div style="text-align:center">
+        <h3>🔍 Ask the AI Tutor</h3>
+        <p class="muted" style="margin-top:6px">Get quick concept help, solved examples or learning suggestions.</p>
+      </div>
+
+      <form id="aiForm" style="margin-top:14px">
+        <input id="aiInput" placeholder="Type your question (e.g. Solve x²+5x+6=0)..." />
+        <button id="aiSend" type="submit">Ask</button>
+      </form>
+
+      <div id="aiChat" aria-live="polite" style="margin-top:14px"></div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features container" aria-label="features">
+      <div class="feature">
+        <h3>👨‍🏫 Expert Tutors</h3>
+        <p class="muted">Certified, experienced tutors across subjects and grades.</p>
+      </div>
+      <div class="feature">
+        <h3>🧠 Personalized Learning</h3>
+        <p class="muted">Adaptive plans, progress tracking, and one-on-one attention.</p>
+      </div>
+      <div class="feature">
+        <h3>📈 Result Focused</h3>
+        <p class="muted">Exam prep, fundamentals, and skill building with measurable outcomes.</p>
+      </div>
+    </section>
+
+    <!-- COURSES PREVIEW -->
+    <section id="courses" class="courses" aria-label="courses">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px">
+        <h2>Featured Courses</h2>
+        <a href="courses.html" style="text-decoration:none;color:var(--nav-blue);font-weight:700">See all courses →</a>
+      </div>
+
+      <div class="course-grid">
+        <div class="course-card">
+          <h4>Mathematics Mastery</h4>
+          <p class="muted">Foundations to advanced — problem solving, algebra, geometry, calculus essentials.</p>
+          <p style="margin-top:8px"><strong>Format:</strong> Live + Recorded • <strong>Level:</strong> Class 6–12</p>
+        </div>
+        <div class="course-card">
+          <h4>Science Simplified</h4>
+          <p class="muted">Physics, Chemistry & Biology explained with real-world context and labs.</p>
+          <p style="margin-top:8px"><strong>Format:</strong> Live experiments & doubt sessions</p>
+        </div>
+        <div class="course-card">
+          <h4>English Excellence</h4>
+          <p class="muted">Grammar, vocabulary, reading & writing practice for confidence and clarity.</p>
+        </div>
+        <div class="course-card">
+          <h4>Programming & App Dev</h4>
+          <p class="muted">Python, JavaScript basics, building projects and logic for beginners.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TUTORS -->
+    <section class="tutors">
+      <div class="container" style="text-align:center">
+        <h2>Meet Our Tutors</h2>
+        <p class="muted">Experienced educators who mentor and inspire.</p>
+      </div>
+
+      <div class="tutor-grid container">
+        <div class="tutor-card">
+          <img src="tutor1.jpg" alt="Vikas Kumar">
+          <h4 style="margin:8px 0 2px">Vikas Kumar</h4>
+          <div class="muted">Mathematics Expert</div>
+          <p style="margin-top:8px;font-size:.95rem">Mentored thousands of students in competitive & school exams.</p>
+        </div>
+
+        <div class="tutor-card">
+          <img src="tutor2.jpg" alt="Ananya Roy">
+          <h4 style="margin:8px 0 2px">Ananya Roy</h4>
+          <div class="muted">Science Specialist</div>
+          <p style="margin-top:8px;font-size:.95rem">Hands-on practicals, conceptual clarity and exam strategies.</p>
+        </div>
+
+        <div class="tutor-card">
+          <img src="tutor3.jpg" alt="Arjun Patel">
+          <h4 style="margin:8px 0 2px">Arjun Patel</h4>
+          <div class="muted">English Coach</div>
+          <p style="margin-top:8px;font-size:.95rem">Communication skills, writing technique and reading comprehension coaching.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials container">
+      <h2 style="margin-bottom:12px;text-align:center">Student Testimonials</h2>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+        <div class="testimonial">“Online Academy Guru transformed my learning. My grades and confidence improved.”<div style="margin-top:8px;font-weight:700">— Priya K.</div></div>
+        <div class="testimonial">“Personalized lessons, clear notes and great practice problems.”<div style="margin-top:8px;font-weight:700">— Rohit S.</div></div>
+        <div class="testimonial">“Excellent tutors and fast doubt resolution.”<div style="margin-top:8px;font-weight:700">— Meera D.</div></div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="about-section">
+      <h2>About Online Academy Guru</h2>
+      <p class="muted" style="margin-top:8px">Online Academy Guru is more than just an online learning platform — it’s an education ecosystem where passionate teaching meets technology to deliver measurable outcomes. We bring together experienced educators and motivated learners through personalized, high-quality sessions that build skills for life. </p>
+
+ <p class="muted" style="margin-top:8px">From foundational subjects to advanced concepts, our expert tutors tailor lessons to each student’s learning style, pace, and goals. We believe that the right guidance can turn curiosity into confidence and effort into excellence.</p>
+
+      <div class="values" role="list">
+        <div class="value-card" role="listitem"><h4>🌟 Our Vision</h4><p class="muted">To redefine learning by making quality education accessible, engaging, and adaptive for every student, everywhere.</p></div>
+        <div class="value-card" role="listitem"><h4>🎯 Our Mission</h4><p class="muted">To connect students with passionate educators who inspire growth, foster curiosity, and unlock true academic potential.</p></div>
+        <div class="value-card" role="listitem"><h4>💡 Our Approach</h4><p class="muted">Interactive one-on-one sessions, practical learning techniques, and continuous feedback ensure each student thrives.</p></div>
+
+      </div>
+
+      <div class="founder" style="margin-top:20px">
+        <img src="tutor1.jpg" alt="Founder Vikas Kumar">
+        <div>
+          <h3 style="margin:0">Vikas Kumar</h3>
+          <div class="muted">Founder - B.Tech (Mechanical), MBA (Operations)</div>
+<p style="margin-top:8px">With years of experience in education and mentoring, Vikas Kumar founded Online Academy Guru with a simple goal — to make quality tutoring accessible, meaningfull, practical and results-driven for every learner.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER (stunning blue) -->
+ <footer>
+    © 2025 Online Academy Guru. All rights reserved.
+  </footer>
+
+  <!-- ---------- AI SCRIPT (unchanged logic, kept original backend endpoint) ---------- -->
+  <script>
+
+const bookBtn = document.getElementById('bookTrialBtn');
+const container = document.getElementById('trialFormContainer');
+const closeBtn = document.getElementById('closeFormBtn');
+const page1 = document.getElementById('formPage1');
+const page2 = document.getElementById('formPage2');
+const form1 = document.getElementById('trialForm1');
+const form2 = document.getElementById('trialForm2');
+const successMsg = document.getElementById('formSuccess');
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAVUkLjhWtawdltWVkDXl24qkB3s_ReSpXipCqXj7aWSIs6fY8pE6Pp1dSYRiizse0/exec";
+
+// Open & close form
+bookBtn.addEventListener('click', () => {
+  container.classList.add('open');
+  page1.style.display = 'block';
+  page2.style.display = 'none';
+  successMsg.style.display = 'none';
+  successMsg.innerHTML = "";
 });
 
-      if (!res.ok) throw new Error("Network error");
-      const data = await res.json();
-      return data.reply || "No response from AI."; // ✅ matches backend key
-    } catch (err) {
-      console.error(err);
-      return "⚠️ Error connecting to AI service.";
+closeBtn.addEventListener('click', () => {
+  container.classList.remove('open');
+  form1.reset();
+  form2.reset();
+  page1.style.display = 'block';
+  page2.style.display = 'none';
+  successMsg.style.display = 'none';
+  successMsg.innerHTML = "";
+});
+
+// Step 1 → Step 2
+form1.addEventListener('submit', (e) => {
+  e.preventDefault();
+  ['studentName','parentName','mobile','class','subject','city']
+    .forEach(f => form2[f].value = form1[f].value);
+  page1.style.display = 'none';
+  page2.style.display = 'block';
+});
+
+// Step 2 → Submit
+form2.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  if(!form2.terms.checked){
+    alert("You must agree to the Terms and Conditions.");
+    return;
+  }
+
+  const data = new FormData(form2);
+
+  try {
+    const response = await fetch(SCRIPT_URL, { method: 'POST', body: data });
+   const text = await response.text();
+  console.log("Server response:", text);
+  const res = JSON.parse(text);
+
+    if(res.result === "success") {
+      // Fetch status of this Request ID
+      const allRecordsResp = await fetch(SCRIPT_URL);
+      const allRecords = await allRecordsResp.json();
+      const record = allRecords.find(r => r["Request ID"] === res.requestId);
+      const status = record && record["Status"] ? record["Status"] : "Pending";
+
+      successMsg.innerHTML = `
+        ✅ Your Free Trial request has been submitted.<br>
+        🧾 Request ID: ${res.requestId}<br>
+        🟢 Status: ${status}
+      `;
+      successMsg.style.display = 'block';
+
+      setTimeout(() => {
+        container.classList.remove('open');
+        form1.reset();
+        form2.reset();
+        page1.style.display = 'block';
+        page2.style.display = 'none';
+        successMsg.style.display = 'none';
+        successMsg.innerHTML = "";
+      }, 7000);
+
+    } else {
+      console.error("Submission error:", res);
+      alert("❌ Submission failed. Please try again later.");
     }
+
+  } catch(err) {
+    console.error("Fetch error:", err);
+    alert("❌ Submission failed. Please check your internet connection.");
   }
+});
 
-  function appendMessage(text, sender) {
-    const div = document.createElement("div");
-    div.className = `msg ${sender}`;
-    div.textContent = text;
-    chat.appendChild(div);
-    chat.style.display = "block";
-    chat.scrollTop = chat.scrollHeight;
-  }
 
-  function showTyping() {
-    const div = document.createElement("div");
-    div.className = "msg ai typing";
-    div.innerHTML = "<span>●</span> <span>●</span> <span>●</span>";
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-    return div;
-  }
+    const PROXY = "https://corsproxy.io/?";
+    const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoM_5nXg8GDn8nbVakePVEnMdrlaiRX0KTrPwCWTNckSuEDj7pGK9W8QXc1QjwWt9G/exec";
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const question = input.value.trim();
-    if (!question) return;
+    const form = document.getElementById("aiForm");
+    const input = document.getElementById("aiInput");
+    const chat = document.getElementById("aiChat");
 
-    appendMessage(question, "user");
-    input.value = "";
+    async function callAI(prompt) {
+      try {
+        const res = await fetch(PROXY + APP_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        if(!res.ok) throw new Error('Network response not ok');
+        const data = await res.json();
+        return data.reply || "No response from AI.";
+      } catch (err) {
+        console.error(err);
+        return "⚠️ Error connecting to AI service.";
+      }
+    }
 
-    const typing = showTyping();
-    const reply = await callAI(question);
-    typing.remove();
+    function appendMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = `msg ${sender}`;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.style.display = "block";
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-    appendMessage(reply, "ai");
-  });
-</script>
+    function showTyping(){
+      const div = document.createElement("div");
+      div.className = "msg ai typing";
+      div.innerHTML = "Thinking...";
+      chat.appendChild(div);
+      return div;
+    }
 
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if(!q) return;
+      appendMessage(q, "user");
+      input.value = "";
+      const t = showTyping();
+      const reply = await callAI(q);
+      t.remove();
+      appendMessage(reply, "ai");
+    });
+  </script>
 </body>
 </html>
 

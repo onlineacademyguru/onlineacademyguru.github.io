@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Become a Tutor | Online Academy Guru</title>
+
+<style>
+/* ================= GLOBAL (MATCH MAIN SITE) ================= */
+:root{
+  --nav-blue:#09306b;
+  --hero-blue-start:#09406b;
+  --hero-blue-end:#1b42b6;
+  --accent:#ffd500;
+  --card-bg:#ffffff;
+  --muted:#6b7280;
+
+  --blue:#1e3a8a;
+  --blue-dark:#152c63;
+  --light-bg:#f2f6ff;
+
+  --radius:12px;
+  --shadow:0 6px 18px rgba(12,48,107,0.08);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:"Segoe UI", Roboto, system-ui, -apple-system, Arial;
+  background:#f5f7ff;
+  color:#0f1724;
+  line-height:1.45;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:0 18px;
+}
+
+/* ================= HEADER ================= */
+header{
+  background:linear-gradient(90deg,var(--nav-blue),#163f7f);
+  color:#fff;
+  box-shadow:0 6px 18px rgba(8,48,107,0.16);
+}
+.header-inner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 0;
+}
+.logo{
+  font-size:1.6rem;
+  font-weight:800;
+}
+nav a{
+  color:#fff;
+  text-decoration:none;
+  margin-left:14px;
+  font-weight:600;
+  padding:8px;
+  border-radius:8px;
+}
+nav a:hover,
+nav a.active{
+  background:rgba(255,255,255,0.12);
+}
+
+/* ================= HERO ================= */
+.hero{
+  background:linear-gradient(180deg,var(--hero-blue-start),var(--hero-blue-end));
+  color:#fff;
+  padding:70px 0 90px;
+}
+.hero h1{
+  margin:0;
+  font-size:2.4rem;
+  letter-spacing:-0.4px;
+}
+.hero p{
+  margin-top:12px;
+  max-width:620px;
+  color:rgba(255,255,255,0.92);
+}
+
+/* ================= MAIN ================= */
+.section{
+  max-width:1200px;
+  margin:-50px auto 40px;
+  padding:0 18px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:26px;
+}
+
+/* ================= CARD ================= */
+.card{
+  background:var(--card-bg);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:24px;
+}
+
+.card h2{
+  margin-top:0;
+  color:var(--nav-blue);
+  font-size:1.35rem;
+}
+
+/* ================= BENEFITS ================= */
+.feature{
+  background:#f6f8ff;
+  padding:14px;
+  border-radius:10px;
+  margin-top:12px;
+  font-weight:600;
+  font-size:.95rem;
+}
+
+/* ================= FORM ================= */
+form input,
+form select,
+form textarea{
+  width:100%;
+  padding:12px;
+  border-radius:var(--radius);
+  border:1px solid #cbd5e1;
+  margin-bottom:12px;
+  font-size:.95rem;
+  background:#f9fbff;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus{
+  border-color:var(--blue);
+  outline:none;
+  box-shadow:0 0 0 2px rgba(30,58,138,.15);
+}
+
+label{
+  font-size:.9rem;
+  color:var(--muted);
+}
+
+button{
+  width:100%;
+  background:var(--blue);
+  color:#fff;
+  padding:14px;
+  border:none;
+  border-radius:var(--radius);
+  font-weight:800;
+  cursor:pointer;
+}
+button:hover{background:var(--blue-dark)}
+
+#aadhaarValidIcon{
+  position:absolute;
+  right:12px;
+  top:14px;
+  font-size:1.1rem;
+  color:#16a34a;
+  display:none;
+}
+
+/* ================= FOOTER ================= */
+footer{
+  background:linear-gradient(90deg,#163f7f,#08306b);
+  color:#fff;
+  padding:26px 18px;
+  margin-top:40px;
+  text-align:center;
+  box-shadow:0 -8px 30px rgba(8,48,107,.12);
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:900px){
+  .section{grid-template-columns:1fr}
+  .hero h1{font-size:1.8rem}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner container">
+    <div class="logo">🎓 Online Academy Guru</div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="contact.html">Contact</a>
+<a href="#" class="active">Become a Tutor</a>
+      <a href="courses.html">Courses</a>
+      <a href="admin.html">Login</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Become a Tutor</h1>
+    <p>Teach flexibly, earn transparently, and build your professional teaching profile with students across India.</p>
+  </div>
+</section>
+
+<section class="section">
+
+  <!-- LEFT -->
+  <div class="card">
+    <h2>Why Teach With Us?</h2>
+    <div class="feature">⭐ Flexible working hours</div>
+    <div class="feature">📚 Teach subjects you excel in</div>
+    <div class="feature">🧑‍🏫 Professional teaching tools</div>
+    <div class="feature">📈 Nationwide student reach</div>
+    <div class="feature">✔ Zero joining fee</div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="card">
+    <h2>Registration Form</h2>
+
+    <!-- ORIGINAL FORM – UNCHANGED -->
+    <form id="tutorForm" autocomplete="on">
+
+      <input type="text" name="fullName" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Email Address" required>
+      <input type="tel" name="mobile" placeholder="Mobile Number" required pattern="[0-9]{10}">
+
+      <select name="expertise" required>
+        <option value="">Select Subject Expertise</option>
+        <option>Mathematics</option>
+        <option>Science</option>
+        <option>English</option>
+        <option>Physics</option>
+        <option>Chemistry</option>
+        <option>Biology</option>
+        <option>Programming</option>
+        <option>Business Studies</option>
+      </select>
+
+      <input type="text" name="city" placeholder="City" required>
+      <input type="text" name="experience" placeholder="Years of Teaching Experience" required>
+      <input type="text" name="fee" placeholder="Expected Fee per Hour (₹)" required>
+
+      <div style="position:relative;">
+        <input type="text" id="aadhaarInput" name="aadhaar"
+          placeholder="Aadhaar Number (12 digits)"
+          maxlength="12" minlength="12" pattern="[0-9]{12}"
+          oninput="validateAadhaar()" required>
+
+        <span id="aadhaarValidIcon">✔</span>
+
+        <div id="aadhaarError"
+          style="display:none;color:#dc2626;font-size:0.85rem;margin-top:4px;">
+          Aadhaar must be exactly 12 digits.
+        </div>
+      </div>
+
+      <label>Upload ID Proof (Aadhaar / PAN / DL)</label>
+      <input type="file" name="idProof" accept=".pdf,.jpg,.jpeg,.png" required>
+
+      <select name="availability" required>
+        <option value="">Availability</option>
+        <option>Weekdays (Morning)</option>
+        <option>Weekdays (Evening)</option>
+        <option>Weekends</option>
+        <option>Flexible</option>
+      </select>
+
+      <textarea name="additionalInfo" placeholder="Additional Information (optional)" rows="3"></textarea>
+
+      <label style="display:flex;gap:10px;align-items:center;">
+        <input type="checkbox" required style="width:18px;height:18px;">
+        I confirm all details provided are correct.
+      </label>
+
+      <button type="submit">Submit Registration</button>
+      <div id="formMessage" style="display:none;margin-top:10px;"></div>
+    </form>
+  </div>
+
+</section>
+
+<footer>
+  © 2025 Online Academy Guru. All rights reserved.
+</footer>
+
+<!-- ORIGINAL SCRIPT – UNCHANGED -->
+<script>
+function validateAadhaar(){
+  const input=document.getElementById("aadhaarInput");
+  const error=document.getElementById("aadhaarError");
+  const tick=document.getElementById("aadhaarValidIcon");
+  input.value=input.value.replace(/[^0-9]/g,"");
+  if(input.value.length===12){
+    tick.style.display="inline";
+    error.style.display="none";
+  }else{
+    tick.style.display="none";
+    error.style.display="block";
+  }
+}
+
+document.getElementById("tutorForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  const msg=document.getElementById("formMessage");
+  msg.style.display="block";
+  msg.style.color="green";
+  msg.textContent="✔ Registration submitted successfully!";
+  this.reset();
+  document.getElementById("aadhaarValidIcon").style.display="none";
+  document.getElementById("aadhaarError").style.display="none";
+});
+
+ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhtyIxcaSK5BVSumEH1QQ--ZVggCbZF2_d_Mo6CGE8o2eSLFNBxKVM9PHjovvlzjgv/exec";
+
+
+</script>
+
+</body>
+</html>
+
