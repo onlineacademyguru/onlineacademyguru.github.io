@@ -320,6 +320,7 @@ footer{
         <input name="studentName" placeholder="Student Name" required>
         <input name="parentName" placeholder="Parent Name" required>
         <input name="mobile" placeholder="Mobile No." required>
+        <input name="email" placeholder="Enter your Email" required>
         <select name="class" required>
           <option value="">Select Class</option>
           <option>Class 1</option>
@@ -343,6 +344,7 @@ footer{
         <input type="hidden" name="studentName">
         <input type="hidden" name="parentName">
         <input type="hidden" name="mobile">
+        <input type="hidden" name="email">
         <input type="hidden" name="class">
         <input type="hidden" name="subject">
         <input type="hidden" name="city">
@@ -391,72 +393,83 @@ footer{
 
   <!-- SCRIPT -->
   <script>
-    const bookBtn = document.getElementById('bookTrialBtn');
-    const container = document.getElementById('trialFormContainer');
-    const closeBtn = document.getElementById('closeFormBtn');
-    const page1 = document.getElementById('formPage1');
-    const page2 = document.getElementById('formPage2');
-    const form1 = document.getElementById('trialForm1');
-    const form2 = document.getElementById('trialForm2');
-    const successMsg = document.getElementById('formSuccess');
+const bookBtn = document.getElementById('bookTrialBtn');
+const container = document.getElementById('trialFormContainer');
+const closeBtn = document.getElementById('closeFormBtn');
+const page1 = document.getElementById('formPage1');
+const page2 = document.getElementById('formPage2');
+const form1 = document.getElementById('trialForm1');
+const form2 = document.getElementById('trialForm2');
+const successMsg = document.getElementById('formSuccess');
 
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAVUkLjhWtawdltWVkDXl24qkB3s_ReSpXipCqXj7aWSIs6fY8pE6Pp1dSYRiizse0/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmo0IckbqVwoBLzBKS8HjNs-gLGMKQvFR4Ub01E1EK73BMk6a7No5eoKsxsvaz5QxL/exec";
 
-    bookBtn.addEventListener('click', () => {
-      container.classList.add('open');
-      page1.style.display = 'block';
-      page2.style.display = 'none';
-    });
+// Open/close form panel
+bookBtn.addEventListener('click', () => {
+  container.classList.add('open');
+  page1.style.display = 'block';
+  page2.style.display = 'none';
+});
 
-    closeBtn.addEventListener('click', () => {
-      container.classList.remove('open');
-      form1.reset();
-      form2.reset();
-    });
+closeBtn.addEventListener('click', () => {
+  container.classList.remove('open');
+  form1.reset();
+  form2.reset();
+  successMsg.style.display = 'none';
+});
 
-    form1.addEventListener('submit', (e) => {
-      e.preventDefault();
-      ['studentName', 'parentName', 'mobile', 'class', 'subject', 'city']
-        .forEach(f => form2[f].value = form1[f].value);
-      page1.style.display = 'none';
-      page2.style.display = 'block';
-    });
+// Step 1 → Step 2
+form1.addEventListener('submit', (e) => {
+  e.preventDefault();
+  // Copy values to hidden fields in form2
+  ['studentName', 'parentName', 'mobile', 'email','class', 'subject', 'city']
+    .forEach(f => form2[f].value = form1[f].value);
 
-    form2.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!form2.terms.checked) return alert("You must agree to the Terms and Conditions.");
+  page1.style.display = 'none';
+  page2.style.display = 'block';
+});
 
-      try {
-        const response = await fetch(SCRIPT_URL, { method: 'POST', body: new FormData(form2) });
-        const text = await response.text();
-        const res = JSON.parse(text);
+// Step 2 → Submit to Apps Script
+form2.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-        if (res.result === "success") {
-          const allRecordsResp = await fetch(SCRIPT_URL);
-          const allRecords = await allRecordsResp.json();
-          const record = allRecords.find(r => r["Request ID"] === res.requestId);
+  if (!form2.terms.checked) return alert("You must agree to the Terms and Conditions.");
 
-          successMsg.innerHTML = `
-            ✅ Your Free Trial request has been submitted.<br>
-            🧾 Request ID: ${res.requestId}<br>
-            🟢 Status: ${record?.Status || "Pending"}
-          `;
-          successMsg.style.display = 'block';
+  try {
+    // Convert FormData to URLSearchParams
+    const formData = new FormData(form2);
+    const params = new URLSearchParams();
+    formData.forEach((v, k) => params.append(k, v));
 
-          setTimeout(() => {
-            container.classList.remove('open');
-            form1.reset();
-            form2.reset();
-            successMsg.style.display = 'none';
-          }, 6000);
-        } else {
-          alert("Submission failed.");
-        }
-      } catch {
-        alert("Network error. Try again.");
-      }
-    });
+    const response = await fetch(SCRIPT_URL, { method: 'POST', body: params });
 
+
+    // Parse JSON directly
+    const res = await response.json();
+
+    if (res.result === "success") {
+      successMsg.innerHTML = `
+        ✅ Your Free Trial request has been submitted.<br>
+        🧾 Request ID: ${res.requestId}<br>
+        🟢 Status: Pending
+      `;
+      successMsg.style.display = 'block';
+
+      setTimeout(() => {
+        container.classList.remove('open');
+        form1.reset();
+        form2.reset();
+        successMsg.style.display = 'none';
+      }, 6000);
+    } else {
+      alert("Submission failed. Please try again.");
+    }
+
+  } catch(err) {
+    console.error(err);
+    alert("Network error. Please try again.");
+  }
+});
 
     /* COURSE LOADER */
     const SHEET_URL = "https://script.google.com/macros/s/AKfycbyz7BhLYel26C8yedQd1HexC2SPbVfDyzAH14uZ3ljlM9uC5UElEVla8m91iB7N0oQU/exec";

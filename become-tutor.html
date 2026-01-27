@@ -306,18 +306,47 @@ function validateAadhaar(){
   }
 }
 
-document.getElementById("tutorForm").addEventListener("submit",function(e){
+document.getElementById("tutorForm").addEventListener("submit", async function(e){
   e.preventDefault();
-  const msg=document.getElementById("formMessage");
-  msg.style.display="block";
-  msg.style.color="green";
-  msg.textContent="✔ Registration submitted successfully!";
-  this.reset();
-  document.getElementById("aadhaarValidIcon").style.display="none";
-  document.getElementById("aadhaarError").style.display="none";
+
+  const form = this;
+  const msg = document.getElementById("formMessage");
+  const formData = new FormData(form);
+
+  msg.style.display = "block";
+  msg.style.color = "#2563eb";
+  msg.textContent = "⏳ Submitting your registration...";
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.result === "success") {
+      msg.style.color = "green";
+      msg.innerHTML = `
+        ✅ Registration successful!<br>
+        🆔 Tutor ID: <b>${data.requestId}</b><br>
+        📧 Confirmation email sent.
+      `;
+      form.reset();
+      document.getElementById("aadhaarValidIcon").style.display = "none";
+    } else {
+      throw new Error(data.message || "Submission failed");
+    }
+
+  } catch (err) {
+    msg.style.color = "#dc2626";
+    msg.textContent = "❌ Submission failed. Please try again.";
+    console.error(err);
+  }
 });
 
- const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhtyIxcaSK5BVSumEH1QQ--ZVggCbZF2_d_Mo6CGE8o2eSLFNBxKVM9PHjovvlzjgv/exec";
+
+ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqEoBLtqlLzbOl5KMzTNyuhr_QNYXT_abv_1UBSSBSYwQZbk2K9NE2JQ7rFQUJPGzr/exec";
 
 
 </script>
